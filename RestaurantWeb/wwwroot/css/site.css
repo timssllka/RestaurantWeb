@@ -1,0 +1,167 @@
+﻿/* Новые приглушённые цвета */
+:root {
+    --peach: #FFB38E; /* Бывший оранжевый */
+    --sage: #A8C69F; /* Бывший зелёный */
+    --sky: #89CFF0; /* Бывший синий */
+    --lavender: #B399D4; /* Бывший фиолетовый */
+    --cream: #FFF5E1; /* Новый фоновый цвет */
+}
+
+/* Новые стили для трёхколоночного макета */
+.main-content {
+    background-color: var(--cream);
+    border-left: 1px solid rgba(0,0,0,0.05);
+    border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+.right-sidebar {
+    background-color: var(--cream);
+    padding: 20px;
+}
+
+.decoration-element {
+    text-align: center;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+    .decoration-element:hover {
+        opacity: 1;
+        transform: rotate(15deg);
+    }
+
+/* Общие стили */
+body {
+    background-color: var(--cream);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Левая панель */
+.sidebar {
+    background: linear-gradient(180deg, #FFD6A5, #FFB38E);
+    min-height: 100vh;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.btn-sidebar {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #5A4A42;
+    font-weight: 500;
+    text-align: left;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    padding: 10px 15px;
+}
+
+    .btn-sidebar:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-sidebar.active {
+        background: white;
+        color: #FF8C5A;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+/* Карточки */
+.bg-orange {
+    background-color: var(--peach);
+}
+
+.bg-green {
+    background-color: var(--sage);
+}
+
+.bg-blue {
+    background-color: var(--sky);
+}
+
+.bg-purple {
+    background-color: var(--lavender);
+}
+
+.dish-card {
+    transition: all 0.3s ease;
+    border: none;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+    .dish-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+    }
+
+    .dish-card h4 {
+        color: #5A4A42;
+        margin-top: 10px;
+    }
+
+/* Соцсети */
+.social-icons {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.3);
+}
+
+.social-icon {
+    font-size: 1.4rem;
+    color: #5A4A42;
+    margin-right: 15px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+    .social-icon:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+/* Блоки информации */
+.info-block {
+    border-radius: 8px;
+    padding: 20px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+    .info-block h4 {
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+.bg-blue .info-block h4 i,
+.bg-purple .info-block h4 i {
+    margin-right: 10px;
+}
+
+/* Кнопки */
+.btn-light {
+    background-color: rgba(255,255,255,0.9);
+    color: #5A4A42;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+    .btn-light:hover {
+        background-color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .sidebar {
+        min-height: auto;
+        padding-bottom: 20px;
+    }
+
+    .dish-card {
+        margin-bottom: 20px;
+    }
+}

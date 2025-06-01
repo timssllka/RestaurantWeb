@@ -1,0 +1,52 @@
+﻿@page
+@model RestaurantWeb.Pages.Login.IndexModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Вход";
+}
+
+<div class="row min-vh-100">
+    <div class="col-md-2 bg-gradient sidebar">
+        <div class="d-flex flex-column p-3">
+            <a href="/" class="btn btn-sidebar mb-3">Главная</a>
+            <a href="/breakfast" class="btn btn-sidebar mb-3">Завтрак</a>
+            <a href="/lunch" class="btn btn-sidebar mb-3">Обед</a>
+            <a href="/diner" class="btn btn-sidebar mb-3">Ужин</a>
+            <a href="/about" class="btn btn-sidebar mb-3">О кафе</a>
+            <a href="/contacts" class="btn btn-sidebar mb-3">Контакты</a>
+        </div>
+    </div>
+
+    <div class="col-md-6 main-content d-flex align-items-center justify-content-center">
+        <div class="login-panel p-4 rounded shadow-lg bg-light w-100" style="max-width: 400px;">
+            <h2 class="text-center mb-4">Вход</h2>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">@Model.ErrorMessage</div>
+            }
+
+            <form method="post" asp-page="/Login/Index">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="form-label">Логин</label>
+                    <input name="Username" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <input name="Password" type="password" class="form-control" />
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-4 right-sidebar d-flex justify-content-center align-items-start pt-5">
+        <div class="decoration-element">
+            <i class="bi bi-egg-fried" style="font-size: 2rem; color: var(--peach);"></i>
+        </div>
+    </div>
+</div>

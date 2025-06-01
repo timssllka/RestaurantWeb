@@ -1,0 +1,27 @@
+﻿@page
+@model RestaurantWeb.Views.Reservation.IndexModel
+@{
+    Layout = "_Layout"; // Указывает на макет
+    ViewData["Title"] = "Бронирование";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2>Забронировать столик</h2>
+        <form method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Ваше имя</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Дата</label>
+                <input type="date" class="form-control" id="date" required>
+            </div>
+            <div class="mb-3">
+                <label for="time" class="form-label">Время</label>
+                <input type="time" class="form-control" id="time" required>
+            </div>
+            <button type="submit" class="btn btn-success">Забронировать</button>
+        </form>
+    </div>
+</div>
