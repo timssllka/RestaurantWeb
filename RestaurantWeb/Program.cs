@@ -15,38 +15,39 @@ builder.Services.AddResponseCaching();
  builder.Services.AddDbContext<DiplomdbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Настройка аутентификации с куками (оптимизировано для HTTP)
+// Аутентификация
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login"; // Путь к странице входа
-        options.AccessDeniedPath = "/AccessDenied"; // Путь при отказе в доступе
-        options.Cookie.SameSite = SameSiteMode.Lax; // Для работы между HTTP/HTTPS
-        options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Отключаем требование HTTPS
-        options.Cookie.HttpOnly = true; // Защита от XSS
-        options.SlidingExpiration = true; // Обновление времени жизни куки
+        options.LoginPath = "/Login";
+        options.AccessDeniedPath = "/Error/AccessDenied";
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+        options.Cookie.HttpOnly = true;
     });
+
 
 builder.Services.AddAuthorization();
 
 
-
-
 var app = builder.Build();
 
-app.UseCookiePolicy(new CookiePolicyOptions
-{
-    MinimumSameSitePolicy = SameSiteMode.Lax,
-    Secure = CookieSecurePolicy.None
-});
-
+// Middleware
 app.UseStaticFiles();
-
-//добавляем поддержку маршрутизации razor page
-app.MapRazorPages();
+app.UseRouting();
 
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+//добавляем поддержку маршрутизации razor page
+app.MapRazorPages();
+
+// Явный маппинг для страницы ошибки
+app.MapGet("/Error/AccessDenied", async context =>
+{
+    context.Response.Redirect("/Error/AccessDenied");
+});
+
 
 app.Run();
