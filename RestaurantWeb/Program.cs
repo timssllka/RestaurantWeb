@@ -34,6 +34,12 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Lax,
+    Secure = CookieSecurePolicy.None
+});
+
 app.UseStaticFiles();
 
 //добавляем поддержку маршрутизации razor page
