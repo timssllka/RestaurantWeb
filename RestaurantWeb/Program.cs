@@ -15,20 +15,17 @@ builder.Services.AddResponseCaching();
  builder.Services.AddDbContext<DiplomdbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Настройка аутентификации с куками (оптимизировано для HTTP)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login";
-        options.AccessDeniedPath = "/AccessDenied";
+        options.LoginPath = "/Login"; // Путь к странице входа
+        options.AccessDeniedPath = "/AccessDenied"; // Путь при отказе в доступе
+        options.Cookie.SameSite = SameSiteMode.Lax; // Для работы между HTTP/HTTPS
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Отключаем требование HTTPS
+        options.Cookie.HttpOnly = true; // Защита от XSS
+        options.SlidingExpiration = true; // Обновление времени жизни куки
     });
-
-builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-{
-    options.Cookie.SameSite = SameSiteMode.Lax;  // Или Strict, если HTTPS
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None;  // Для HTTP (если нет HTTPS)
-    // Если есть HTTPS, используйте:
-    // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-});
 
 builder.Services.AddAuthorization();
 
