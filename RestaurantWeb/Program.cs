@@ -20,7 +20,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login";
-        options.AccessDeniedPath = "/Error/AccessDenied";
+        options.AccessDeniedPath = "/AccessDenied";
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = CookieSecurePolicy.None;
         options.Cookie.HttpOnly = true;
@@ -43,11 +43,6 @@ app.UseAuthorization();
 //добавл€ем поддержку маршрутизации razor page
 app.MapRazorPages();
 
-// явный маппинг дл€ страницы ошибки
-app.MapGet("/Error/AccessDenied", async context =>
-{
-    context.Response.Redirect("/Error/AccessDenied");
-});
 
 
 app.Run();

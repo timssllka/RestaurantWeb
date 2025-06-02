@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace RestaurantWeb.Pages.Error
+namespace RestaurantWeb.Pages.AccessDenied
 {
-    public class AccessDeniedModel : PageModel
+    public class IndexModel : PageModel
     {
         public void OnGet()
         {
