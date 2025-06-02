@@ -22,7 +22,16 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/AccessDenied";
     });
 
+builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.Cookie.SameSite = SameSiteMode.Lax;  // Или Strict, если HTTPS
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None;  // Для HTTP (если нет HTTPS)
+    // Если есть HTTPS, используйте:
+    // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 builder.Services.AddAuthorization();
+
 
 
 
