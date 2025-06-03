@@ -1,0 +1,215 @@
+﻿@page
+@model RestaurantWeb.Pages.Menu.IndexModel
+@{
+
+    Layout = "_Layout";
+    ViewData["Title"] = "Меню";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Левая боковая панель -->
+        <div class="col-md-3 col-lg-2 sidebar p-0">
+            <div class="d-flex flex-column p-4">
+                <div class="decoration-element mb-5">
+                    <i class="bi bi-egg-fried" style="font-size: 3rem; color: #5A4A42;"></i>
+                </div>
+                
+                <a href="/" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-house-door me-2"></i>Главная
+                </a>
+                <a href="/Menu" class="btn btn-sidebar active mb-3">
+                    <i class="bi bi-menu-button-wide me-2"></i>Меню
+                </a>
+                <a href="/About" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-info-circle me-2"></i>О нас
+                </a>
+                <a href="/Contacts" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-telephone me-2"></i>Контакты
+                </a>
+                
+                <div class="social-icons mt-auto">
+                    <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основное содержимое -->
+        <main class="col-md-9 col-lg-7 main-content px-4 py-5">
+            <div class="text-center mb-5">
+                <h1 style="color: var(--peach);">Наше меню</h1>
+                <p class="lead">Попробуйте наши фирменные блюда</p>
+            </div>
+
+            <!-- Фильтры -->
+            <div class="dish-filters mb-5">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">Все категории</option>
+                            @foreach (var category in Model.Categories)
+                            {
+                                <option value="@category.CategoryId">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="seasonFilter">
+                            <option value="">Любой сезон</option>
+                            <option value="круглогодичное">Круглый год</option>
+                            <option value="летнее">Летнее</option>
+                            <option value="зимнее">Зимнее</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Меню по категориям -->
+            @foreach (var category in Model.Categories)
+            {
+                <div class="menu-category mb-5" data-category="@category.CategoryId">
+                    <h2 class="category-title mb-4" style="color: var(--peach); border-bottom: 2px solid var(--peach); padding-bottom: 8px;">
+                        @category.Name
+                    </h2>
+                    <p class="category-description mb-4">@category.Description</p>
+                    
+                    <div class="row">
+                        @foreach (var dish in Model.Dishes.Where(d => d.CategoryId == category.CategoryId))
+                        {
+                            <div class="col-md-6 mb-4 dish-card" data-season="@dish.Seasonality?.ToLower()">
+                                <div class="dish-card-inner h-100">
+                                    <div class="dish-header d-flex justify-content-between align-items-start">
+                                        <h3 style="color: var(--peach);">@dish.Name</h3>
+                                        <span class="badge bg-sage">@dish.Price.ToString("N2") ₽</span>
+                                    </div>
+                                    
+                                    @if (!string.IsNullOrEmpty(dish.Seasonality))
+                                    {
+                                        <span class="season-badge @GetSeasonBadgeClass(dish.Seasonality)">
+                                            @GetSeasonName(dish.Seasonality)
+                                        </span>
+                                    }
+                                    
+                                    <p class="dish-composition mt-2">
+                                        <i class="bi bi-list-ul me-2" style="color: var(--peach);"></i>
+                                        @dish.Composition
+                                    </p>
+                                    
+                                    @if (dish.Calories.HasValue)
+                                    {
+                                        <p class="dish-calories">
+                                            <i class="bi bi-fire me-2" style="color: var(--peach);"></i>
+                                            @dish.Calories.Value ккал
+                                        </p>
+                                    }
+                                    
+                                    <button class="btn btn-add-to-cart mt-3">
+                                        <i class="bi bi-cart-plus me-2"></i>Добавить
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </main>
+
+        <!-- Правая боковая панель (корзина) -->
+        <div class="col-lg-3 right-sidebar p-4">
+            <div class="cart-container sticky-top">
+                <h3 class="mb-4" style="color: var(--peach);">
+                    <i class="bi bi-cart3 me-2"></i>Ваш заказ
+                </h3>
+                
+                <div class="cart-items mb-3">
+                    <!-- Пример товара в корзине -->
+                    <div class="cart-item mb-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Борщ</h6>
+                                <small class="text-muted">1 x 350 ₽</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Товары будут добавляться через JS -->
+                </div>
+                
+                <div class="cart-total mb-4">
+                    <h5>Итого: <span id="cartTotal">0</span> ₽</h5>
+                </div>
+                
+                <button class="btn btn-order w-100">
+                    Оформить заказ <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetSeasonName(string seasonality)
+    {
+        return seasonality switch
+        {
+            "круглогодичное" => "Круглый год",
+            "летнее" => "Летнее",
+            "зимнее" => "Зимнее",
+            _ => seasonality
+        };
+    }
+
+    string GetSeasonBadgeClass(string seasonality)
+    {
+        return seasonality switch
+        {
+            "круглогодичное" => "bg-sky",
+            "летнее" => "bg-sage",
+            "зимнее" => "bg-lavender",
+            _ => "bg-peach"
+        };
+    }
+}
+
+<script>
+    // Фильтрация блюд
+    document.getElementById('categoryFilter').addEventListener('change', function() {
+        const categoryId = this.value;
+        document.querySelectorAll('.menu-category').forEach(category => {
+            if (!categoryId || category.dataset.category === categoryId) {
+                category.style.display = 'block';
+            } else {
+                category.style.display = 'none';
+            }
+        });
+    });
+
+    document.getElementById('seasonFilter').addEventListener('change', function() {
+        const season = this.value;
+        document.querySelectorAll('.dish-card').forEach(card => {
+            if (!season || card.dataset.season === season) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
+    // Логика корзины
+    document.querySelectorAll('.btn-add-to-cart').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const dishCard = this.closest('.dish-card-inner');
+            const dishName = dishCard.querySelector('h3').textContent;
+            const dishPrice = dishCard.querySelector('.badge').textContent;
+
+            // Здесь должна быть логика добавления в корзину
+            alert(`Добавлено в корзину: ${dishName} - ${dishPrice}`);
+        });
+    });
+</script>
