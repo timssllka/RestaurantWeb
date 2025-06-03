@@ -6,18 +6,7 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//добавляем в приложение сервисы razor page
-builder.Services.AddRazorPages(options =>
-{
-    // Настройка авторизации для страниц
-    options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
-    options.Conventions.AuthorizeFolder("/Staff", "StaffOnly");
-}).AddRazorPagesOptions(options =>
-{
-    options.Conventions.AllowAnonymousToPage("/Login");
-    options.Conventions.AllowAnonymousToPage("/AccessDenied");
-})
-;
+builder.Services.AddRazorPages();
 builder.Services.AddResponseCaching();
 
 // Настройка политик авторизации
@@ -27,16 +16,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireRole("администратор"));
 
-    // Политика для персонала и администраторов
-    options.AddPolicy("StaffOnly", policy =>
-        policy.RequireRole("персонал", "администратор"));
-
-    // Пример кастомной политики с требованием минимального стажа
-    options.AddPolicy("ExperiencedStaff", policy =>
-    {
-        policy.RequireRole("персонал", "администратор");
-        // Здесь можно добавить дополнительные требования
-    });
 });
 
 // Добавляем аутентификацию через куки
@@ -47,6 +26,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/AccessDenied";
         options.Cookie.HttpOnly = true;
         options.ExpireTimeSpan = TimeSpan.FromHours(1); // Время жизни куки
+
     });
 
 builder.Services.AddDbContext<DiplomdbContext>(options =>
