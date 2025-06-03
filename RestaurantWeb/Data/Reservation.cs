@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace RestaurantWeb.Data;
 
-/// <summary>
-/// Бронирование столов посетителями
-/// </summary>
 public partial class Reservation
 {
     public int ReservationId { get; set; }

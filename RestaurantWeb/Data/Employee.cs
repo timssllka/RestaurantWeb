@@ -13,8 +13,5 @@ public partial class Employee
 
     public string? Schedule { get; set; }
 
-    /// <summary>
-    /// Уровень доступа (1-базовый, 3-админ)
-    /// </summary>
     public int AccessLevel { get; set; }
 }

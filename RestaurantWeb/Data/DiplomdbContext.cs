@@ -49,6 +49,8 @@ public partial class DiplomdbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresExtension("pgcrypto");
+
         modelBuilder.Entity<Client>(entity =>
         {
             entity.HasKey(e => e.ClientId).HasName("clients_pkey");
@@ -61,10 +63,10 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasIndex(e => e.Phone, "idx_clients_phone");
 
+            entity.HasIndex(e => e.UserId, "idx_clients_user_id");
+
             entity.Property(e => e.ClientId).HasColumnName("client_id");
-            entity.Property(e => e.Allergies)
-                .HasComment("Список аллергенов через запятую")
-                .HasColumnName("allergies");
+            entity.Property(e => e.Allergies).HasColumnName("allergies");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .HasColumnName("email");
@@ -74,19 +76,24 @@ public partial class DiplomdbContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .HasColumnName("phone");
-            entity.Property(e => e.Preferences)
-                .HasComment("Предпочтения в еде и обслуживании")
-                .HasColumnName("preferences");
+            entity.Property(e => e.Preferences).HasColumnName("preferences");
+            entity.Property(e => e.UserId)
+                .HasComment("Ссылка на учетную запись пользователя")
+                .HasColumnName("user_id");
             entity.Property(e => e.VisitHistory)
                 .HasColumnType("jsonb")
                 .HasColumnName("visit_history");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Clients)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("clients_user_id_fkey");
         });
 
         modelBuilder.Entity<Dish>(entity =>
         {
             entity.HasKey(e => e.DishId).HasName("dishes_pkey");
 
-            entity.ToTable("dishes", tb => tb.HasComment("Меню ресторана"));
+            entity.ToTable("dishes");
 
             entity.HasIndex(e => e.Name, "dishes_name_key").IsUnique();
 
@@ -104,7 +111,6 @@ public partial class DiplomdbContext : DbContext
                 .HasColumnName("price");
             entity.Property(e => e.Seasonality)
                 .HasMaxLength(20)
-                .HasComment("Сезонная доступность блюда")
                 .HasColumnName("seasonality");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Dishes)
@@ -116,7 +122,7 @@ public partial class DiplomdbContext : DbContext
         {
             entity.HasKey(e => e.CategoryId).HasName("dish_categories_pkey");
 
-            entity.ToTable("dish_categories", tb => tb.HasComment("Категории меню (супы, десерты и т.д.)"));
+            entity.ToTable("dish_categories");
 
             entity.HasIndex(e => e.Name, "dish_categories_name_key").IsUnique();
 
@@ -131,7 +137,7 @@ public partial class DiplomdbContext : DbContext
         {
             entity.HasKey(e => new { e.DishId, e.IngredientId }).HasName("dish_ingredients_pkey");
 
-            entity.ToTable("dish_ingredients", tb => tb.HasComment("Состав блюд в ингредиентах"));
+            entity.ToTable("dish_ingredients");
 
             entity.Property(e => e.DishId).HasColumnName("dish_id");
             entity.Property(e => e.IngredientId).HasColumnName("ingredient_id");
@@ -157,9 +163,7 @@ public partial class DiplomdbContext : DbContext
             entity.ToTable("employees");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.AccessLevel)
-                .HasComment("Уровень доступа (1-базовый, 3-админ)")
-                .HasColumnName("access_level");
+            entity.Property(e => e.AccessLevel).HasColumnName("access_level");
             entity.Property(e => e.FullName)
                 .HasMaxLength(100)
                 .HasColumnName("full_name");
@@ -187,7 +191,7 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.Supplier).WithMany(p => p.Ingredients)
                 .HasForeignKey(d => d.SupplierId)
-                .HasConstraintName("fk_ingredients_suppliers");
+                .HasConstraintName("ingredients_supplier_id_fkey");
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -207,7 +211,6 @@ public partial class DiplomdbContext : DbContext
                 .HasColumnName("order_time");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
-                .HasComment("Текущий статус выполнения заказа")
                 .HasColumnName("status");
             entity.Property(e => e.TableId).HasColumnName("table_id");
             entity.Property(e => e.TotalAmount)
@@ -220,14 +223,14 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.Table).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.TableId)
-                .HasConstraintName("fk_orders_tables");
+                .HasConstraintName("orders_table_id_fkey");
         });
 
         modelBuilder.Entity<OrderItem>(entity =>
         {
             entity.HasKey(e => new { e.OrderId, e.DishId }).HasName("order_items_pkey");
 
-            entity.ToTable("order_items", tb => tb.HasComment("Связь заказов с блюдами"));
+            entity.ToTable("order_items");
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.DishId).HasColumnName("dish_id");
@@ -269,7 +272,6 @@ public partial class DiplomdbContext : DbContext
             entity.Property(e => e.DishId).HasColumnName("dish_id");
             entity.Property(e => e.DiscountPercent)
                 .HasPrecision(5, 2)
-                .HasComment("Процент скидки на конкретное блюдо")
                 .HasColumnName("discount_percent");
 
             entity.HasOne(d => d.Dish).WithMany(p => p.PromotionDishes)
@@ -287,7 +289,7 @@ public partial class DiplomdbContext : DbContext
         {
             entity.HasKey(e => e.ReservationId).HasName("reservations_pkey");
 
-            entity.ToTable("reservations", tb => tb.HasComment("Бронирование столов посетителями"));
+            entity.ToTable("reservations");
 
             entity.HasIndex(e => e.ReservationTime, "idx_reservations_time");
 
@@ -334,7 +336,7 @@ public partial class DiplomdbContext : DbContext
         {
             entity.HasKey(e => e.TableId).HasName("tables_pkey");
 
-            entity.ToTable("tables", tb => tb.HasComment("Физические столы в зале ресторана"));
+            entity.ToTable("tables");
 
             entity.Property(e => e.TableId).HasColumnName("table_id");
             entity.Property(e => e.Capacity).HasColumnName("capacity");
@@ -355,6 +357,8 @@ public partial class DiplomdbContext : DbContext
             entity.HasKey(e => e.UserId).HasName("users_pkey");
 
             entity.ToTable("users", tb => tb.HasComment("Учетные записи для доступа к системе"));
+
+            entity.HasIndex(e => e.Username, "idx_users_username");
 
             entity.HasIndex(e => e.Username, "users_username_key").IsUnique();
 

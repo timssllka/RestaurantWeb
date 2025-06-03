@@ -9,9 +9,6 @@ public partial class Order
 
     public DateTime? OrderTime { get; set; }
 
-    /// <summary>
-    /// Текущий статус выполнения заказа
-    /// </summary>
     public string Status { get; set; } = null!;
 
     public decimal? TotalAmount { get; set; }

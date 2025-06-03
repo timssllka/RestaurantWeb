@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace RestaurantWeb.Data;
 
-/// <summary>
-/// Связь заказов с блюдами
-/// </summary>
 public partial class OrderItem
 {
     public int OrderId { get; set; }

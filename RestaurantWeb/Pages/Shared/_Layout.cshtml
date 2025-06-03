@@ -13,10 +13,16 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">Точка на против</a>
-                <div class="d-flex">.
+                <div class="d-flex">
+                  
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        
+                        @if(User.Claims.FirstOrDefault(x=>x.Value == "администратор")!=null)
+                        {
+                            <a href="/admin" class="btn btn-light">
+                                <i class="bi bi-box-arrow-in-left me-2"></i>АдминПанель
+                            </a>
+                        }
                         <a href="/Logout"  class="btn btn-light">
                             <i class="bi bi-box-arrow-in-right me-2"></i>Выйти
                         </a>

@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace RestaurantWeb.Data;
 
-/// <summary>
-/// Физические столы в зале ресторана
-/// </summary>
 public partial class Table
 {
     public int TableId { get; set; }

@@ -49,7 +49,7 @@ namespace RestaurantWeb.Pages.Login
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity));
 
-            return Redirect(user.Role == "администратор" ? "/Admin" : "/Home");
+            return Redirect("/Home");
         }
 
         private static string HashPassword(string password)

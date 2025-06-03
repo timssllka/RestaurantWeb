@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace RestaurantWeb.Data;
 
-/// <summary>
-/// Меню ресторана
-/// </summary>
 public partial class Dish
 {
     public int DishId { get; set; }
@@ -20,9 +17,6 @@ public partial class Dish
 
     public int? Calories { get; set; }
 
-    /// <summary>
-    /// Сезонная доступность блюда
-    /// </summary>
     public string? Seasonality { get; set; }
 
     public virtual DishCategory? Category { get; set; }

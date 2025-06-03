@@ -9,9 +9,6 @@ public partial class PromotionDish
 
     public int DishId { get; set; }
 
-    /// <summary>
-    /// Процент скидки на конкретное блюдо
-    /// </summary>
     public decimal? DiscountPercent { get; set; }
 
     public virtual Dish Dish { get; set; } = null!;

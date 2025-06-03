@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace RestaurantWeb.Data;
 
-/// <summary>
-/// Состав блюд в ингредиентах
-/// </summary>
 public partial class DishIngredient
 {
     public int DishId { get; set; }

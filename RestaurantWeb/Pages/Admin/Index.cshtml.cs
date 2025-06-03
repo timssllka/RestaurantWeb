@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace RestaurantWeb.Pages.Admin
 {
-    [Authorize(Roles = "администратор")]
+    [Authorize(Policy ="AdminOnly")]
 
     public class IndexModel : PageModel
     {

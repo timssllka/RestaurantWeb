@@ -15,4 +15,6 @@ public partial class User
     public string PasswordHash { get; set; } = null!;
 
     public string Role { get; set; } = null!;
+
+    public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
 }

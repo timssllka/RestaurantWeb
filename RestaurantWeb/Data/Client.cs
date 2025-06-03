@@ -16,19 +16,20 @@ public partial class Client
 
     public string Email { get; set; } = null!;
 
-    /// <summary>
-    /// Список аллергенов через запятую
-    /// </summary>
     public string? Allergies { get; set; }
 
-    /// <summary>
-    /// Предпочтения в еде и обслуживании
-    /// </summary>
     public string? Preferences { get; set; }
 
     public string? VisitHistory { get; set; }
 
+    /// <summary>
+    /// Ссылка на учетную запись пользователя
+    /// </summary>
+    public int? UserId { get; set; }
+
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+
+    public virtual User? User { get; set; }
 }
