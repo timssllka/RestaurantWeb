@@ -7,7 +7,17 @@ using System;
 var builder = WebApplication.CreateBuilder(args);
 
 //добавляем в приложение сервисы razor page
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    // Настройка авторизации для страниц
+    options.Conventions.AuthorizeFolder("/Admin", "AdminOnly");
+    options.Conventions.AuthorizeFolder("/Staff", "StaffOnly");
+}).AddRazorPagesOptions(options =>
+{
+    options.Conventions.AllowAnonymousToPage("/Login");
+    options.Conventions.AllowAnonymousToPage("/AccessDenied");
+})
+;
 builder.Services.AddResponseCaching();
 
 // Настройка политик авторизации
@@ -34,6 +44,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login"; // Путь к странице входа
+        options.AccessDeniedPath = "/AccessDenied";
         options.Cookie.HttpOnly = true;
         options.ExpireTimeSpan = TimeSpan.FromHours(1); // Время жизни куки
     });
@@ -45,6 +56,7 @@ builder.Services.AddDbContext<DiplomdbContext>(options =>
 var app = builder.Build();
 
 // Middleware
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
