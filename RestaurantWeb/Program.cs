@@ -10,24 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddResponseCaching();
 
-//добавляем edentity + EF Core
-
- builder.Services.AddDbContext<DiplomdbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Аутентификация
+// Добавляем аутентификацию через куки
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login";
-        options.AccessDeniedPath = "/AccessDenied";
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+        options.LoginPath = "/Login"; // Путь к странице входа
         options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(1); // Время жизни куки
     });
 
-
-builder.Services.AddAuthorization();
+builder.Services.AddDbContext<DiplomdbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var app = builder.Build();
@@ -35,14 +28,9 @@ var app = builder.Build();
 // Middleware
 app.UseStaticFiles();
 app.UseRouting();
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 //добавляем поддержку маршрутизации razor page
 app.MapRazorPages();
-
-
-
 app.Run();

@@ -19,8 +19,9 @@ namespace RestaurantWeb.Pages.Login
         [BindProperty] public string Username { get; set; }
         [BindProperty] public string Password { get; set; }
         public string ErrorMessage { get; set; }
-
         public IndexModel(DiplomdbContext context) => _context = context;
+
+
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -34,20 +35,19 @@ namespace RestaurantWeb.Pages.Login
                 ErrorMessage = "Неверный логин или пароль";
                 return Page();
             }
-
+            // Создаем куки аутентификации
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.Username),
-                new(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
+            var claimsIdentity = new ClaimsIdentity(
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
             await HttpContext.SignInAsync(
-                new ClaimsPrincipal(
-                    new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)),
-                new AuthenticationProperties
-                {
-                    IsPersistent = true // Постоянная кука
-                });
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
 
             return Redirect(user.Role == "администратор" ? "/Admin" : "/Home");
         }
