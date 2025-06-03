@@ -6,47 +6,121 @@
     ViewData["Title"] = "Вход";
 }
 
-<div class="row min-vh-100">
-    <div class="col-md-2 bg-gradient sidebar">
-        <div class="d-flex flex-column p-3">
-            <a href="/" class="btn btn-sidebar mb-3">Главная</a>
-            <a href="/breakfast" class="btn btn-sidebar mb-3">Завтрак</a>
-            <a href="/lunch" class="btn btn-sidebar mb-3">Обед</a>
-            <a href="/diner" class="btn btn-sidebar mb-3">Ужин</a>
-            <a href="/about" class="btn btn-sidebar mb-3">О кафе</a>
-            <a href="/contacts" class="btn btn-sidebar mb-3">Контакты</a>
+
+<div class="container-fluid min-vh-100">
+    <div class="row">
+        <!-- Левая боковая панель -->
+        <div class="col-md-3 col-lg-2 sidebar p-0 d-none d-md-block">
+            <div class="d-flex flex-column p-4">
+                <div class="decoration-element mb-5">
+                    <i class="bi bi-egg-fried" style="font-size: 3rem; color: #5A4A42;"></i>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-6 main-content d-flex align-items-center justify-content-center">
-        <div class="login-panel p-4 rounded shadow-lg bg-light w-100" style="max-width: 400px;">
-            <h2 class="text-center mb-4">Вход</h2>
-
-            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-            {
-                <div class="alert alert-danger">@Model.ErrorMessage</div>
-            }
-
-            <form method="post" asp-page="/Login/Index">
-                @Html.AntiForgeryToken()
-                <div class="mb-3">
-                    <label class="form-label">Логин</label>
-                    <input name="Username" class="form-control" />
+        <!-- Основное содержимое -->
+        <main class="col-md-6 col-lg-7 main-content d-flex align-items-center justify-content-center py-5">
+            <div class="login-panel p-5 rounded-4 w-100" style="max-width: 450px; background-color: var(--cream); box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+                <div class="text-center mb-4">
+                    <div class="decoration-element mb-3">
+                        <i class="bi bi-door-open" style="font-size: 2.5rem; color: var(--peach);"></i>
+                    </div>
+                    <h2 style="color: var(--peach);">Вход в систему</h2>
+                    <p class="text-muted">Введите свои учетные данные</p>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Пароль</label>
-                    <input name="Password" type="password" class="form-control" />
-                </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Войти</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <div class="col-md-4 right-sidebar d-flex justify-content-center align-items-start pt-5">
-        <div class="decoration-element">
-            <i class="bi bi-egg-fried" style="font-size: 2rem; color: var(--peach);"></i>
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert bg-peach text-red rounded-4 mb-4 border-0">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@Model.ErrorMessage
+                    </div>
+                }
+
+                <form method="post" asp-page="/Login/Index" id="loginForm" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-4">
+                        <label class="form-label" style="color: var(--peach); font-weight: 500;">Логин</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent" style="border-right: none;">
+                                <i class="bi bi-person" style="color: var(--peach);"></i>
+                            </span>
+                            <input name="Username" class="form-control" style="border-left: none; background-color: rgba(255,255,255,0.7);"
+                                   placeholder="Введите ваш логин" required />
+                        </div>
+                        <div class="invalid-feedback">Пожалуйста, введите логин</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label" style="color: var(--peach); font-weight: 500;">Пароль</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent" style="border-right: none;">
+                                <i class="bi bi-lock" style="color: var(--peach);"></i>
+                            </span>
+                            <input name="Password" type="password" class="form-control" style="border-left: none; background-color: rgba(255,255,255,0.7);"
+                                   placeholder="Введите пароль" required />
+                        </div>
+                        <div class="invalid-feedback">Пожалуйста, введите пароль</div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn rounded-4 py-2"
+                                style="background-color: var(--peach); color: white; border: none; font-weight: 500;">
+                            Войти <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <p class="small" style="color: var(--text-secondary);">
+                            Нет аккаунта? <a href="/Register" style="color: var(--peach); text-decoration: none;">Зарегистрируйтесь</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- Правая боковая панель -->
+        <div class="col-md-3 col-lg-3 right-sidebar d-flex flex-column align-items-center justify-content-center py-5">
+            <div class="decoration-element mb-4">
+                <i class="bi bi-egg-fried" style="font-size: 4rem; color: var(--peach); opacity: 0.7;"></i>
+            </div>
+            <div class="text-center px-4">
+                <h4 style="color: var(--peach);">Точка на против</h4>
+                <p class="small" style="color: var(--text-secondary);">Войдите, чтобы получить доступ ко всем возможностям</p>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Валидация формы при отправке
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        const form = event.target;
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Добавляем классы валидации ко всем полям
+            const inputs = form.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        form.classList.add('was-validated');
+    });
+
+    // Убираем сообщения об ошибке при вводе
+    document.querySelectorAll('input[required]').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+</script>
+

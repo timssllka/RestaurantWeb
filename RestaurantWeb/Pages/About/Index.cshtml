@@ -1,0 +1,144 @@
+﻿@page
+@model RestaurantWeb.Pages.About.IndexModel
+@{
+}
+@{
+    Layout = "_Layout"; // Указывает на макет
+    ViewData["Title"] = "О кафе";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Левая боковая панель -->
+        <div class="col-md-3 col-lg-2 sidebar p-0">
+            <div class="d-flex flex-column p-4">
+                <div class="decoration-element mb-5">
+                    <i class="bi bi-egg-fried" style="font-size: 3rem; color: #5A4A42;"></i>
+                </div>
+                
+                <a href="/" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-house-door me-2"></i>Главная
+                </a>
+                <a href="/Menu" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-menu-button-wide me-2"></i>Меню
+                </a>
+                <a href="/About" class="btn btn-sidebar active mb-3">
+                    <i class="bi bi-info-circle me-2"></i>О нас
+                </a>
+                <a href="/Contacts" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-telephone me-2"></i>Контакты
+                </a>
+                
+                <div class="social-icons mt-auto">
+                    <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основное содержимое -->
+        <main class="col-md-9 col-lg-7 main-content px-4 py-5">
+            <h1 class="mb-4" style="color: var(--peach);">О нашем кафе</h1>
+            
+            <div class="row mb-5">
+                <div class="col-md-6">
+                    <div class="dish-card bg-peach rounded-4 p-4 h-100">
+                        <h3><i class="bi bi-clock-history me-2"></i>Наша история</h3>
+                        <p class="mt-3">Основанное в 2015 году, наше кафе начинало как маленькая кофейня на окраине города. Сегодня мы превратились в любимое место горожан, где можно попробовать авторские блюда и насладиться уютной атмосферой.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="dish-card bg-sage rounded-4 p-4 h-100">
+                        <h3><i class="bi bi-lightbulb me-2"></i>Наша философия</h3>
+                        <p class="mt-3">Мы верим, что еда - это не просто питание, а искусство, которое должно приносить радость. Используем только свежие, сезонные продукты от местных производителей, поддерживая таким образом региональное сообщество.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dish-card bg-lavender rounded-4 p-4 mb-5">
+                <h2 class="text-center mb-4">Наша команда</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div class="decoration-element mb-3">
+                                <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h4>Татьяна</h4>
+                            <p>Шеф-повар</p>
+                            <p class="small">"Готовлю с душой уже более 10 лет"</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div class="decoration-element mb-3">
+                                <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h4>Михаил</h4>
+                            <p>Бариста</p>
+                            <p class="small">"Кофе - это моя страсть и искусство"</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div class="decoration-element mb-3">
+                                <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h4>Елена</h4>
+                            <p>Кондитер</p>
+                            <p class="small">"Сладости должны быть вкусными и красивыми"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dish-card bg-sky rounded-4 p-4">
+                <h2 class="text-center mb-4">Наши ценности</h2>
+                <div class="row text-center">
+                    <div class="col-md-3 mb-4">
+                        <i class="bi bi-egg-fried" style="font-size: 2rem;"></i>
+                        <h5 class="mt-2">Качество</h5>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <i class="bi bi-heart" style="font-size: 2rem;"></i>
+                        <h5 class="mt-2">Забота</h5>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <i class="bi bi-recycle" style="font-size: 2rem;"></i>
+                        <h5 class="mt-2">Экология</h5>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <i class="bi bi-people" style="font-size: 2rem;"></i>
+                        <h5 class="mt-2">Сообщество</h5>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Правая боковая панель -->
+        <div class="col-lg-3 right-sidebar d-none d-lg-block">
+            <div class="dish-card bg-peach rounded-4 p-4 mb-4">
+                <h4><i class="bi bi-calendar-event me-2"></i>Часы работы</h4>
+                <ul class="list-unstyled mt-3">
+                    <li class="mb-2">Пн-Пт: 8:00 - 22:00</li>
+                    <li class="mb-2">Сб-Вс: 9:00 - 23:00</li>
+                </ul>
+            </div>
+            
+            <div class="dish-card bg-sage rounded-4 p-4 mb-4">
+                <h4><i class="bi bi-geo-alt me-2"></i>Мы здесь</h4>
+                <p class="mt-3">ул. Ленина, 15<br>Город Тулун</p>
+                <a href="#" class="btn btn-light mt-2">Посмотреть на карте</a>
+            </div>
+            
+            <div class="dish-card bg-lavender rounded-4 p-4">
+                <h4><i class="bi bi-award me-2"></i>Награды</h4>
+                <ul class="list-unstyled mt-3">
+                    <li class="mb-2">Лучшее кафе 2022</li>
+                    <li class="mb-2">Золотой повар 2021</li>
+                    <li class="mb-2">Экологичный бизнес 2020</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

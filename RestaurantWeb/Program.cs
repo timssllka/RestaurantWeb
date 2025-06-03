@@ -15,6 +15,7 @@ builder.Services.AddAuthorization(options =>
     // Политика только для администраторов
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireRole("администратор"));
+    
 
 });
 

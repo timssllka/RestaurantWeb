@@ -4,79 +4,123 @@
     Layout = "_Layout"; // Указывает на макет
     ViewData["Title"] = "Главная";
 }
-<h2>@Model.Roles</h2>
-
-<div class="row min-vh-100">
-    <!-- Левая панель с кнопками (20%) -->
-    <div class="col-md-2 bg-gradient sidebar">
-        <div class="d-flex flex-column p-3">
-            <!-- Основные кнопки -->
-            <a href="/" class="btn btn-sidebar mb-3 active">Главная</a>
-            <a href="/breakfast" class="btn btn-sidebar mb-3">Завтрак</a>
-            <a href="/lunch" class="btn btn-sidebar mb-3">Обед</a>
-            <a href="/diner" class="btn btn-sidebar mb-3">Ужин</a>
-            <a href="/about" class="btn btn-sidebar mb-3">О кафе</a>
-            <a href="/contacts" class="btn btn-sidebar mb-3">Контакты</a>
 
 
-            <!-- Соцсети -->
-            <div class="mt-5 social-icons">
-                <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
-                <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="social-icon"><i class="bi bi-telegram"></i></a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Центральная часть (60%) -->
-    <div class="col-md-6 main-content p-4">
-        <!-- Слайдер с блюдом -->
-        <div class="hero-slider mb-4">
-            <img src="~/images/slide-01.jpg" class="img-fluid rounded" id="hero-image">
-        </div>
-
-        <!-- Две панели с блюдами -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="dish-card p-3 bg-orange rounded">
-                    <img src="~/images/dish-01.jpg" class="img-fluid mb-2">
-                    <h4>Сырный суп</h4>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Левая боковая панель -->
+        <div class="col-md-3 col-lg-2 sidebar p-0">
+            <div class="d-flex flex-column p-4">
+                <div class="decoration-element mb-5">
+                    <i class="bi bi-egg-fried" style="font-size: 3rem; color: #5A4A42;"></i>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="dish-card p-3 bg-green rounded">
-                    <img src="~/images/dish-02.jpg" class="img-fluid mb-2">
-                    <h4>Стейк с овощами</h4>
+                
+                <a href="/" class="btn btn-sidebar active mb-3">
+                    <i class="bi bi-house-door me-2"></i>Главная
+                </a>
+                <a href="/Menu" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-menu-button-wide me-2"></i>Меню
+                </a>
+                <a href="/About" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-info-circle me-2"></i>О нас
+                </a>
+                <a href="/Contacts" class="btn btn-sidebar mb-3">
+                    <i class="bi bi-telephone me-2"></i>Контакты
+                </a>
+                
+                <div class="social-icons mt-auto">
+                    <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="bi bi-telegram"></i></a>
                 </div>
             </div>
         </div>
 
-        <!-- Время работы -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="info-block p-3 bg-blue rounded">
-                    <h4><i class="bi bi-clock"></i> Время работы:</h4>
-                    <p>Пн-Пт: 9:00–23:00<br>Сб-Вс: 10:00–24:00</p>
+        <!-- Основное содержимое -->
+        <main class="col-md-9 col-lg-7 main-content px-4 py-5">
+            <div class="text-center mb-5">
+                <h1 class="mb-4" style="color: var(--peach);">Добро пожаловать в "Точка на против"</h1>
+                <p class="lead">Место, где вкус встречается с уютом</p>
+            </div>
+
+            <!-- Исправленное центрирование изображения -->
+            <div class="d-flex justify-content-center mb-5">
+                <div class="dish-card p-0 overflow-hidden" style="max-width: 100%; border-radius: 15px;">
+                    <img src="https://source.unsplash.com/random/800x500/?cafe" 
+                         alt="Наше кафе" 
+                         class="img-fluid w-100"
+                         style="object-fit: cover; height: 400px;">
                 </div>
             </div>
-        </div>
 
-        <!-- Связь с сотрудниками -->
-        <div class="row">
-            <div class="col-12">
-                <div class="info-block p-3 bg-purple rounded">
-                    <h4><i class="bi bi-headset"></i> Свяжитесь с нами:</h4>
-                    <button class="btn btn-light">Написать в WhatsApp</button>
+            <div class="row mb-5">
+                <div class="col-md-6 mb-4">
+                    <div class="dish-card bg-sage rounded-4 p-4 h-100">
+                        <h3><i class="bi bi-star me-2"></i>Специальные предложения</h3>
+                        <p class="mt-3">Каждый день с 8:00 до 11:00 - специальный завтрак всего за 299 рублей. По будням - бизнес-ланч с 12:00 до 16:00.</p>
+                        <a href="/Menu" class="btn btn-light mt-3">Посмотреть меню</a>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="dish-card bg-peach rounded-4 p-4 h-100">
+                        <h3><i class="bi bi-calendar-event me-2"></i>События</h3>
+                        <p class="mt-3">Каждую пятницу - вечер живой музыки. По воскресеньям - кулинарные мастер-классы для детей и взрослых.</p>
+                        <a href="/Contacts" class="btn btn-light mt-3">Узнать больше</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Правый пустой столбец (20%) -->
-    <div class="col-md-4 right-sidebar">
-        <!-- Можно добавить декоративные элементы или оставить пустым -->
-        <div class="decoration-element mt-5">
-            <i class="bi bi-egg-fried" style="font-size: 2rem; color: var(--peach);"></i>
+            <div class="dish-card bg-lavender rounded-4 p-4 mb-5">
+                <h2 class="text-center mb-4">Почему выбирают нас</h2>
+                <div class="row text-center">
+                    <div class="col-md-4 mb-4">
+                        <div class="decoration-element mb-3">
+                            <i class="bi bi-cup-hot" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h4>Авторские рецепты</h4>
+                        <p>Уникальные блюда, которые вы не найдёте больше нигде</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="decoration-element mb-3">
+                            <i class="bi bi-egg-fried" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h4>Свежие продукты</h4>
+                        <p>Работаем только с проверенными локальными поставщиками</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="decoration-element mb-3">
+                            <i class="bi bi-heart" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h4>Уютная атмосфера</h4>
+                        <p>Дизайн интерьера, создающий ощущение дома</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Правая боковая панель -->
+        <div class="col-lg-3 right-sidebar d-none d-lg-block">
+            <div class="dish-card bg-sky rounded-4 p-4 mb-4">
+                <h4><i class="bi bi-chat-quote me-2"></i>Отзывы</h4>
+                <div class="mt-3">
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <strong>Анна</strong>
+                        </div>
+                        <p class="small">"Лучший кофе в городе и потрясающие десерты!"</p>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <strong>Михаил</strong>
+                        </div>
+                        <p class="small">"Уютное место с отличной кухней. Стали постоянными гостями."</p>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-light mt-2">Оставить отзыв</a>
+            </div>
+            
+           
         </div>
     </div>
 </div>

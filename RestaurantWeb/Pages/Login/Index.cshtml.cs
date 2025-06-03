@@ -15,7 +15,6 @@ namespace RestaurantWeb.Pages.Login
     public class IndexModel : PageModel
     {
         private readonly DiplomdbContext _context;
-
         [BindProperty] public string Username { get; set; }
         [BindProperty] public string Password { get; set; }
         public string ErrorMessage { get; set; }

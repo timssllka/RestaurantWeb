@@ -1,4 +1,253 @@
 ﻿@page
 @model RestaurantWeb.Pages.Admin.IndexModel
 @{
+    Layout = "_Layout";
+    ViewData["Title"] = "Админ панель";
 }
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Левая боковая панель -->
+        <div class="col-md-3 col-lg-2 sidebar p-0">
+            <div class="d-flex flex-column p-4">
+                <div class="decoration-element mb-5">
+                    <i class="bi bi-shield-lock" style="font-size: 3rem; color: #5A4A42;"></i>
+                </div>
+                
+                <a href="/admin" class="btn btn-sidebar active mb-3">
+                    <i class="bi bi-speedometer2 me-2"></i>Панель управления
+                </a>
+                
+                <h6 class="sidebar-section-title mt-3 mb-2 ps-2">Управление</h6>
+                <a href="#staff" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-people me-2"></i>Персонал
+                </a>
+                <a href="#inventory" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-box-seam me-2"></i>Склад
+                </a>
+                <a href="#promotions" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-percent me-2"></i>Акции
+                </a>
+                
+                <h6 class="sidebar-section-title mt-3 mb-2 ps-2">Отчеты</h6>
+                <a href="#reports" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-graph-up me-2"></i>Аналитика
+                </a>
+                
+                <div class="mt-auto pt-3">
+                    <a href="/" class="btn btn-sidebar">
+                        <i class="bi bi-arrow-left me-2"></i>На сайт
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основное содержимое -->
+        <main class="col-md-9 col-lg-10 main-content px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0" style="color: var(--peach);">
+                    <i class="bi bi-shield-lock me-2"></i>Админ панель
+                </h2>
+                <div class="admin-welcome">
+                    Добро пожаловать, <strong>@User.Identity.Name</strong>!
+                </div>
+            </div>
+            
+            <!-- Карточки быстрого доступа -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="admin-quick-card bg-peach h-100">
+                        <div class="d-flex align-items-center">
+                            <div class="quick-card-icon me-3">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div>
+                                <h5>Персонал</h5>
+                                <p class="mb-1">@Model.Context.Employees.Count() сотрудников</p>
+                                <a href="#staff" class="btn btn-admin-sm">Управление</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="admin-quick-card bg-sage h-100">
+                        <div class="d-flex align-items-center">
+                            <div class="quick-card-icon me-3">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                            <div>
+                                <h5>Склад</h5>
+                                <p class="mb-1">42 позиции</p>
+                                <a href="#inventory" class="btn btn-admin-sm">Контроль</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="admin-quick-card bg-lavender h-100">
+                        <div class="d-flex align-items-center">
+                            <div class="quick-card-icon me-3">
+                                <i class="bi bi-percent"></i>
+                            </div>
+                            <div>
+                                <h5>Акции</h5>
+                                <p class="mb-1">3 активные</p>
+                                <a href="#promotions" class="btn btn-admin-sm">Настроить</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Раздел управления персоналом -->
+            <section id="staff" class="admin-section mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0" style="color: var(--peach);">
+                        <i class="bi bi-people me-2"></i>Управление персоналом
+                    </h3>
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                        <i class="bi bi-plus-circle me-1"></i>Добавить
+                    </button>
+                </div>
+                
+                <div class="admin-table-container">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ФИО</th>
+                                <th>Должность</th>
+                                <th>Контакты</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>101</td>
+                                <td>Иванова Анна</td>
+                                <td>Администратор</td>
+                                <td>anna@example.com</td>
+                                <td><span class="badge bg-success">Активен</span></td>
+                                <td>
+                                    <button class="btn btn-admin-sm me-1"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-admin-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Другие строки таблицы -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Раздел контроля склада -->
+            <section id="inventory" class="admin-section mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0" style="color: var(--peach);">
+                        <i class="bi bi-box-seam me-2"></i>Контроль склада и закупок
+                    </h3>
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                        <i class="bi bi-plus-circle me-1"></i>Добавить
+                    </button>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="admin-card mb-4">
+                            <h5 class="admin-card-title">Критические остатки</h5>
+                            <ul class="admin-list">
+                                <li>Молоко - осталось 2 л</li>
+                                <li>Кофе арабика - 0.5 кг</li>
+                                <li>Сахар - 3 кг</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="admin-card mb-4">
+                            <h5 class="admin-card-title">Ожидаемые поставки</h5>
+                            <ul class="admin-list">
+                                <li>Заказ #245 - ожидается 15.06</li>
+                                <li>Заказ #246 - ожидается 16.06</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-table-container">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Наименование</th>
+                                <th>Количество</th>
+                                <th>Ед. изм.</th>
+                                <th>Последняя поставка</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>5001</td>
+                                <td>Кофе арабика</td>
+                                <td class="text-danger">0.5</td>
+                                <td>кг</td>
+                                <td>10.06.2023</td>
+                                <td>
+                                    <button class="btn btn-admin-sm me-1"><i class="bi bi-cart-plus"></i></button>
+                                    <button class="btn btn-admin-sm"><i class="bi bi-pencil"></i></button>
+                                </td>
+                            </tr>
+                            <!-- Другие строки таблицы -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Раздел акций и скидок -->
+            <section id="promotions" class="admin-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0" style="color: var(--peach);">
+                        <i class="bi bi-percent me-2"></i>Настройка акций и скидок
+                    </h3>
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addPromoModal">
+                        <i class="bi bi-plus-circle me-1"></i>Добавить
+                    </button>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="promo-card bg-peach-light">
+                            <div class="promo-badge">Активна</div>
+                            <h4>Счастливые часы</h4>
+                            <p>Скидка 20% на все напитки с 15:00 до 17:00</p>
+                            <div class="promo-dates">15.06 - 30.06.2023</div>
+                            <div class="promo-actions">
+                                <button class="btn btn-admin-sm me-1"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-admin-sm btn-danger"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Другие акции -->
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- Модальные окна -->
+<div class="modal fade" id="addStaffModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content admin-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить сотрудника</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Форма добавления сотрудника -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Добавьте аналогичные модальные окна для других разделов -->
+
