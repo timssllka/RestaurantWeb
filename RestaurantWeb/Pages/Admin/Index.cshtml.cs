@@ -13,9 +13,15 @@ namespace RestaurantWeb.Pages.Admin
         public IndexModel(DiplomdbContext context) => _context = context;
         public DiplomdbContext Context { get { return _context; } }
 
-
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            if (User.Identity?.IsAuthenticated != true ||
+       User.Claims.FirstOrDefault(x => x.Value == "администратор") == null)
+            {
+                return Redirect("/Home");
+            }
+
+            return Page();
         }
     }
 }
