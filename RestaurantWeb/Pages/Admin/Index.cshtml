@@ -5,22 +5,6 @@
     Layout = "_Layout";
     ViewData["Title"] = "Админ панель";
 }
-@* @if (User.Identity?.IsAuthenticated == true)
-{
-
-    @if (User.Claims.FirstOrDefault(x => x.Value == "администратор") != null)
-    {
-
-    }
-    else
-    {
-        Redirect("/Home");
-    }
-}
-else
-{
-    Redirect("/Home");
-} *@
 <div class="container-fluid">
     <div class="row">
         <!-- Левая боковая панель -->
@@ -35,14 +19,17 @@ else
                 </a>
 
                 <h6 class="sidebar-section-title mt-3 mb-2 ps-2">Управление</h6>
-                <a href="#staff" class="btn btn-sidebar mb-2">
-                    <i class="bi bi-people me-2"></i>Персонал
+                <a href="#users" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-people me-2"></i>Пользователи
                 </a>
-                <a href="#inventory" class="btn btn-sidebar mb-2">
-                    <i class="bi bi-box-seam me-2"></i>Склад
+                <a href="#roles" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-shield me-2"></i>Роли
                 </a>
-                <a href="#promotions" class="btn btn-sidebar mb-2">
-                    <i class="bi bi-percent me-2"></i>Акции
+                <a href="#menu" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-menu-button me-2"></i>Меню
+                </a>
+                <a href="#tables" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-table me-2"></i>Столы
                 </a>
                 <a href="#orders" class="btn btn-sidebar mb-2">
                     <i class="bi bi-receipt me-2"></i>Заказы
@@ -51,9 +38,12 @@ else
                     <i class="bi bi-calendar me-2"></i>Бронирования
                 </a>
 
-                <h6 class="sidebar-section-title mt-3 mb-2 ps-2">Отчеты</h6>
-                <a href="#reports" class="btn btn-sidebar mb-2">
-                    <i class="bi bi-graph-up me-2"></i>Аналитика
+                <h6 class="sidebar-section-title mt-3 mb-2 ps-2">Контент</h6>
+                <a href="#promotions" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-percent me-2"></i>Акции
+                </a>
+                <a href="#categories" class="btn btn-sidebar mb-2">
+                    <i class="bi bi-tags me-2"></i>Категории
                 </a>
 
                 <div class="mt-auto pt-3">
@@ -84,9 +74,9 @@ else
                                 <i class="bi bi-people"></i>
                             </div>
                             <div>
-                                <h5>Персонал</h5>
-                                <p class="mb-1">@Model.Context.Employees.Count() сотрудников</p>
-                                <a href="#staff" class="btn btn-admin-sm">Управление</a>
+                                <h5>Пользователи</h5>
+                                <p class="mb-1">@Model.Context.Users.Count() аккаунтов</p>
+                                <a href="#users" class="btn btn-admin-sm">Управление</a>
                             </div>
                         </div>
                     </div>
@@ -95,32 +85,18 @@ else
                     <div class="admin-quick-card bg-sage h-100">
                         <div class="d-flex align-items-center">
                             <div class="quick-card-icon me-3">
-                                <i class="bi bi-box-seam"></i>
+                                <i class="bi bi-menu-button"></i>
                             </div>
                             <div>
-                                <h5>Ингредиенты</h5>
-                                <p class="mb-1">@Model.Context.Ingredients.Count() позиций</p>
-                                <a href="#inventory" class="btn btn-admin-sm">Контроль</a>
+                                <h5>Меню</h5>
+                                <p class="mb-1">@Model.Context.Dishes.Count() блюд</p>
+                                <a href="#menu" class="btn btn-admin-sm">Редактировать</a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
                     <div class="admin-quick-card bg-lavender h-100">
-                        <div class="d-flex align-items-center">
-                            <div class="quick-card-icon me-3">
-                                <i class="bi bi-percent"></i>
-                            </div>
-                            <div>
-                                <h5>Акции</h5>
-                                <p class="mb-1">@Model.Context.Promotions.Count() активных</p>
-                                <a href="#promotions" class="btn btn-admin-sm">Настроить</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="admin-quick-card bg-sky h-100">
                         <div class="d-flex align-items-center">
                             <div class="quick-card-icon me-3">
                                 <i class="bi bi-receipt"></i>
@@ -133,15 +109,29 @@ else
                         </div>
                     </div>
                 </div>
+                <div class="col-md-3 mb-3">
+                    <div class="admin-quick-card bg-sky h-100">
+                        <div class="d-flex align-items-center">
+                            <div class="quick-card-icon me-3">
+                                <i class="bi bi-percent"></i>
+                            </div>
+                            <div>
+                                <h5>Акции</h5>
+                                <p class="mb-1">@Model.Context.Promotions.Count() активных</p>
+                                <a href="#promotions" class="btn btn-admin-sm">Настроить</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Раздел управления персоналом -->
-            <section id="staff" class="admin-section mb-5">
+            <!-- Раздел управления пользователями -->
+            <section id="users" class="admin-section mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="mb-0" style="color: var(--peach);">
-                        <i class="bi bi-people me-2"></i>Управление персоналом
+                        <i class="bi bi-people me-2"></i>Управление пользователями
                     </h3>
-                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addUserModal">
                         <i class="bi bi-plus-circle me-1"></i>Добавить
                     </button>
                 </div>
@@ -151,33 +141,45 @@ else
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>ФИО</th>
-                                <th>Должность</th>
-                                <th>График</th>
-                                <th>Уровень доступа</th>
+                                <th>Логин</th>
+                                <th>Email</th>
+                                <th>Роли</th>
+                                <th>Статус</th>
                                 <th>Действия</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var employee in Model.Context.Employees.OrderBy(e => e.Position))
+                            @foreach (var user in Model.Context.Users
+                                .Include(u => u.UserRoles)
+                                .ThenInclude(ur => ur.Role)
+                                .OrderBy(u => u.Username))
                             {
                                 <tr>
-                                    <td>@employee.EmployeeId</td>
-                                    <td>@employee.FullName</td>
-                                    <td>@employee.Position</td>
-                                    <td>@employee.Schedule</td>
-                                    <td>@employee.AccessLevel</td>
+                                    <td>@user.UserId</td>
+                                    <td>@user.Username</td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        @foreach (var role in user.UserRoles.Select(ur => ur.Role))
+                                        {
+                                            <span class="badge bg-primary me-1">@role.RoleName</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @((bool)user.IsActive ? "bg-success" : "bg-secondary")">
+                                            @((bool)user.IsActive ? "Активен" : "Неактивен")
+                                        </span>
+                                    </td>
                                     <td>
                                         <button class="btn btn-admin-sm me-1"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#editStaffModal"
-                                                data-id="@employee.EmployeeId">
+                                                data-bs-target="#editUserModal"
+                                                data-id="@user.UserId">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-admin-sm btn-danger"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#deleteStaffModal"
-                                                data-id="@employee.EmployeeId">
+                                                data-bs-target="#deleteUserModal"
+                                                data-id="@user.UserId">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
@@ -188,54 +190,75 @@ else
                 </div>
             </section>
 
-            <!-- Раздел контроля склада -->
-            <section id="inventory" class="admin-section mb-5">
+            <!-- Раздел управления ролями -->
+            <section id="roles" class="admin-section mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="mb-0" style="color: var(--peach);">
-                        <i class="bi bi-box-seam me-2"></i>Контроль склада
+                        <i class="bi bi-shield me-2"></i>Управление ролями
                     </h3>
-                    <div>
-                        <button class="btn btn-admin me-2" data-bs-toggle="modal" data-bs-target="#addIngredientModal">
-                            <i class="bi bi-plus-circle me-1"></i>Ингредиент
-                        </button>
-                        <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
-                            <i class="bi bi-truck me-1"></i>Поставщик
-                        </button>
-                    </div>
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                        <i class="bi bi-plus-circle me-1"></i>Добавить
+                    </button>
                 </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="admin-card alert-danger">
-                            <h5 class="admin-card-title">
-                                <i class="bi bi-exclamation-triangle me-2"></i>Критические остатки
-                            </h5>
-                            <ul class="admin-list">
-                                @foreach (var ingredient in Model.Context.Ingredients
-                                                                .Where(i => i.Quantity < 5)
-                                                                .OrderBy(i => i.Quantity)
-                                                                .Take(5))
-                                {
-                                    <li>@ingredient.Name - @ingredient.Quantity</li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="admin-card alert-warning">
-                            <h5 class="admin-card-title">
-                                <i class="bi bi-clock me-2"></i>Скоро истекает срок
-                            </h5>
-                            <ul class="admin-list">
-                                @*  @foreach (var ingredient in Model.Context.Ingredients
-                                                                .Where(i => i.ExpirationDate.HasValue && (i.ExpirationDate) < ( DateTime.Now.AddDays(7)))
-                                                                .OrderBy(i => i.ExpirationDate)
-                                                                .Take(5))
-                                {
-                                    <li>@ingredient.Name - до @ingredient.ExpirationDate?.ToShortDateString()</li>
-                                } *@
-                            </ul>
-                        </div>
+                <div class="admin-table-container">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Описание</th>
+                                <th>Пользователей</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var role in Model.Context.Roles
+                                .Include(r => r.UserRoles)
+                                .OrderBy(r => r.RoleName))
+                            {
+                                <tr>
+                                    <td>@role.RoleId</td>
+                                    <td>@role.RoleName</td>
+                                    <td>@role.Description</td>
+                                    <td>@role.UserRoles.Count</td>
+                                    <td>
+                                        <button class="btn btn-admin-sm me-1"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editRoleModal"
+                                                data-id="@role.RoleId">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        @if (role.UserRoles.Count == 0)
+                                        {
+                                            <button class="btn btn-admin-sm btn-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteRoleModal"
+                                                    data-id="@role.RoleId">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Раздел управления меню -->
+            <section id="menu" class="admin-section mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0" style="color: var(--peach);">
+                        <i class="bi bi-menu-button me-2"></i>Управление меню
+                    </h3>
+                    <div>
+                        <button class="btn btn-admin me-2" data-bs-toggle="modal" data-bs-target="#addDishModal">
+                            <i class="bi bi-plus-circle me-1"></i>Блюдо
+                        </button>
+                        <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                            <i class="bi bi-tag me-1"></i>Категорию
+                        </button>
                     </div>
                 </div>
 
@@ -244,97 +267,86 @@ else
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Наименование</th>
-                                <th>Количество</th>
-                                <th>Поставщик</th>
-                                <th>Срок годности</th>
+                                <th>Название</th>
+                                <th>Категория</th>
+                                <th>Цена</th>
+                                <th>Состав</th>
                                 <th>Действия</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var ingredient in Model.Context.Ingredients
-                                                        .Include(i => i.Supplier)
-                                                        .OrderBy(i => i.Name))
+                            @foreach (var dish in Model.Context.Dishes
+                                .Include(d => d.Category)
+                                .OrderBy(d => d.Name))
                             {
-                                <tr class="@(ingredient.Quantity < 5 ? "table-danger" :
-                                                                                                                                                                                                                            (ingredient.ExpirationDate.HasValue &&
-                                                                                                                                                                                                                            ingredient.ExpirationDate.Value.ToDateTime(TimeOnly.MinValue) < DateTime.Now.AddDays(3)) ? "table-warning" : "")">
-                                <td>@ingredient.IngredientId</td>
-                                <td>@ingredient.Name</td>
-                                <td>@ingredient.Quantity</td>
-                                <td>@(ingredient.Supplier?.CompanyName ?? "Не указан")</td>
-                                <td>@(ingredient.ExpirationDate?.ToShortDateString() ?? "Нет данных")</td>
-                                <td>
-                                    <button class="btn btn-admin-sm me-1"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editIngredientModal"
-                                            data-id="@ingredient.IngredientId">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-admin-sm btn-danger"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#deleteIngredientModal"
-                                            data-id="@ingredient.IngredientId">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                                                        }
+                                <tr>
+                                    <td>@dish.DishId</td>
+                                    <td>@dish.Name</td>
+                                    <td>@dish.Category?.Name</td>
+                                    <td>@dish.Price.ToString("N2") ₽</td>
+                                    <td>@dish.Composition</td>
+                                    <td>
+                                        <button class="btn btn-admin-sm me-1"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editDishModal"
+                                                data-id="@dish.DishId">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-admin-sm btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteDishModal"
+                                                data-id="@dish.DishId">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- Раздел акций и скидок -->
-            <section id="promotions" class="admin-section mb-5">
+            <!-- Раздел управления столами -->
+            <section id="tables" class="admin-section mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="mb-0" style="color: var(--peach);">
-                        <i class="bi bi-percent me-2"></i>Акции и скидки
+                        <i class="bi bi-table me-2"></i>Управление столами
                     </h3>
-                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addPromoModal">
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addTableModal">
                         <i class="bi bi-plus-circle me-1"></i>Добавить
                     </button>
                 </div>
 
                 <div class="row">
-                    @foreach (var promo in Model.Context.Promotions
-                                        .Include(p => p.PromotionDishes)
-                                        .ThenInclude(pd => pd.Dish)
-                                        .OrderByDescending(p => p.EndDate))
+                    @foreach (var table in Model.Context.Tables.OrderBy(t => t.TableId))
                     {
                         <div class="col-md-4 mb-4">
-                            <div class="promo-card @(promo.EndDate.ToDateTime(TimeOnly.MinValue) < DateTime.Now ? "bg-secondary" : "bg-peach-light")">
-                                <div class="promo-badge @(promo.EndDate.ToDateTime(TimeOnly.MinValue) < DateTime.Now ? "bg-secondary" : "bg-success")">
-                                    @(promo.EndDate.ToDateTime(TimeOnly.MinValue) < DateTime.Now ? "Завершена" : "Активна")
+                            <div class="table-card @(table.Status == "free" ? "bg-success-light" : 
+                                                  table.Status == "occupied" ? "bg-danger-light" : "bg-warning-light")">
+                                <div class="table-badge bg-primary">
+                                    Стол #@table.TableId
                                 </div>
-                                <h4>@promo.Name</h4>
-                                <p>@promo.Conditions</p>
-                                <div class="promo-dishes mb-2">
-                                    @foreach (var pd in promo.PromotionDishes.Take(3))
-                                    {
-                                        <span class="badge bg-sage me-1">
-                                            @pd.Dish.Name @pd.DiscountPercent%
-                                        </span>
-                                    }
-                                    @if (promo.PromotionDishes.Count > 3)
-                                    {
-                                        <span class="badge bg-sky">+@(promo.PromotionDishes.Count - 3)</span>
-                                    }
+                                <h4>@table.Type</h4>
+                                <p><i class="bi bi-people"></i> Вместимость: @table.Capacity чел.</p>
+                                <p><i class="bi bi-geo-alt"></i> @table.Location</p>
+                                <div class="table-status mb-2">
+                                    Статус: 
+                                    <span class="badge @(table.Status == "free" ? "bg-success" : 
+                                                      table.Status == "occupied" ? "bg-danger" : "bg-warning")">
+                                        @GetTableStatus(table.Status)
+                                    </span>
                                 </div>
-                                <div class="promo-dates">
-                                    @promo.StartDate.ToShortDateString() - @promo.EndDate.ToShortDateString()
-                                </div>
-                                <div class="promo-actions mt-3">
+                                <div class="table-actions mt-3">
                                     <button class="btn btn-admin-sm me-1"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#editPromoModal"
-                                            data-id="@promo.PromotionId">
+                                            data-bs-target="#editTableModal"
+                                            data-id="@table.TableId">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button class="btn btn-admin-sm btn-danger"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#deletePromoModal"
-                                            data-id="@promo.PromotionId">
+                                            data-bs-target="#deleteTableModal"
+                                            data-id="@table.TableId">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -357,9 +369,9 @@ else
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Клиент</th>
-                                <th>Стол</th>
                                 <th>Время</th>
+                                <th>Стол</th>
+                                <th>Клиент</th>
                                 <th>Сумма</th>
                                 <th>Статус</th>
                                 <th>Действия</th>
@@ -367,20 +379,20 @@ else
                         </thead>
                         <tbody>
                             @foreach (var order in Model.Context.Orders
-                                                        .Include(o => o.Client)
-                                                        .Include(o => o.Table)
-                                                        .OrderByDescending(o => o.OrderTime)
-                                                        .Take(10))
+                                .Include(o => o.Table)
+                                .Include(o => o.Client)
+                                .OrderByDescending(o => o.OrderTime)
+                                .Take(20))
                             {
                                 <tr>
                                     <td>@order.OrderId</td>
-                                    <td>@order.Client?.FullName</td>
+                                    <td>@order.OrderTime.ToString()</td>
                                     <td>@order.Table?.Location (№@order.TableId)</td>
-                                    <td>@order.OrderTime.</td>
-                                    <td>@order.TotalAmount ₽</td>
+                                    <td>@order.Client?.FullName</td>
+                                    <td>@order.TotalAmount?.ToString("N2") ₽</td>
                                     <td>
                                         <span class="badge @GetOrderStatusBadgeClass(order.Status)">
-                                            @order.Status
+                                            @GetOrderStatus(order.Status)
                                         </span>
                                     </td>
                                     <td>
@@ -395,11 +407,11 @@ else
                 </div>
             </section>
 
-            <!-- Раздел бронирований -->
-            <section id="reservations" class="admin-section">
+            <!-- Раздел управления бронированиями -->
+            <section id="reservations" class="admin-section mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="mb-0" style="color: var(--peach);">
-                        <i class="bi bi-calendar me-2"></i>Бронирования
+                        <i class="bi bi-calendar me-2"></i>Управление бронированиями
                     </h3>
                 </div>
 
@@ -408,9 +420,9 @@ else
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Клиент</th>
-                                <th>Стол</th>
                                 <th>Дата/время</th>
+                                <th>Стол</th>
+                                <th>Клиент</th>
                                 <th>Гостей</th>
                                 <th>Статус</th>
                                 <th>Действия</th>
@@ -418,20 +430,20 @@ else
                         </thead>
                         <tbody>
                             @foreach (var reservation in Model.Context.Reservations
-                                                        .Include(r => r.Client)
-                                                        .Include(r => r.Table)
-                                                        .OrderByDescending(r => r.ReservationTime)
-                                                        .Take(10))
+                                .Include(r => r.Table)
+                                .Include(r => r.Client)
+                                .OrderByDescending(r => r.ReservationTime)
+                                .Take(20))
                             {
                                 <tr>
                                     <td>@reservation.ReservationId</td>
-                                    <td>@reservation.Client?.FullName</td>
-                                    <td>@reservation.Table?.Location (№@reservation.TableId)</td>
                                     <td>@reservation.ReservationTime.ToString("g")</td>
+                                    <td>@reservation.Table?.Location (№@reservation.TableId)</td>
+                                    <td>@reservation.Client?.FullName</td>
                                     <td>@reservation.GuestsNumber</td>
                                     <td>
                                         <span class="badge @GetReservationStatusBadgeClass(reservation.Status)">
-                                            @reservation.Status
+                                            @GetReservationStatus(reservation.Status)
                                         </span>
                                     </td>
                                     <td>
@@ -454,22 +466,141 @@ else
                     </table>
                 </div>
             </section>
+
+            <!-- Раздел управления акциями -->
+            <section id="promotions" class="admin-section mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0" style="color: var(--peach);">
+                        <i class="bi bi-percent me-2"></i>Управление акциями
+                    </h3>
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addPromotionModal">
+                        <i class="bi bi-plus-circle me-1"></i>Добавить
+                    </button>
+                </div>
+
+                <div class="row">
+                    @foreach (var promo in Model.Context.Promotions
+                        .OrderByDescending(p => p.EndDate))
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="promo-card @(DateTime.Parse(promo.EndDate.ToString()) < DateTime.Now ? "bg-secondary" : "bg-peach-light")">
+                                <div class="promo-badge @(DateTime.Parse(promo.EndDate.ToString()) < DateTime.Now ? "bg-secondary" : "bg-success")">
+                                    @(DateTime.Parse(promo.EndDate.ToString()) < DateTime.Now ? "Завершена" : "Активна")
+                                </div>
+                                <h4>@promo.Name</h4>
+                                <p>@promo.Conditions</p>
+                                <div class="promo-dates">
+                                    @promo.StartDate.ToString("d") - @promo.EndDate.ToString("d")
+                                </div>
+                                <div class="promo-actions mt-3">
+                                    <button class="btn btn-admin-sm me-1"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editPromotionModal"
+                                            data-id="@promo.PromotionId">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-admin-sm btn-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deletePromotionModal"
+                                            data-id="@promo.PromotionId">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Раздел управления категориями -->
+            <section id="categories" class="admin-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0" style="color: var(--peach);">
+                        <i class="bi bi-tags me-2"></i>Управление категориями
+                    </h3>
+                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                        <i class="bi bi-plus-circle me-1"></i>Добавить
+                    </button>
+                </div>
+
+                <div class="row">
+                    @foreach (var category in Model.DishCategories.OrderBy(c => c.Name))
+                    {
+                        <div class="col-md-3 mb-4">
+                            <div class="category-card bg-sage-light">
+                                <h5>@category.Name</h5>
+                                <p class="small">@(category.Description ?? "Нет описания")</p>
+                                <p class="small text-muted">
+                                    Блюд: @Model.Context.Dishes.Count(d => d.CategoryId == category.CategoryId)
+                                </p>
+                                <div class="category-actions mt-2">
+                                    <button class="btn btn-admin-sm me-1"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editCategoryModal"
+                                            data-id="@category.CategoryId">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    @if (Model.Context.Dishes.Count(d => d.CategoryId == category.CategoryId) == 0)
+                                    {
+                                        <button class="btn btn-admin-sm btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteCategoryModal"
+                                                data-id="@category.CategoryId">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
         </main>
     </div>
 </div>
 
-
-
-
 @functions {
+    string GetOrderStatus(string status)
+    {
+        return status switch
+        {
+            "received" => "Получен",
+            "preparing" => "Готовится",
+            "served" => "Подано",
+            "paid" => "Оплачено",
+            _ => status
+        };
+    }
+
+    string GetReservationStatus(string status)
+    {
+        return status switch
+        {
+            "confirmed" => "Подтверждено",
+            "canceled" => "Отменено",
+            _ => status
+        };
+    }
+
+    string GetTableStatus(string status)
+    {
+        return status switch
+        {
+            "free" => "Свободен",
+            "occupied" => "Занят",
+            "reserved" => "Забронирован",
+            _ => status
+        };
+    }
+
     string GetOrderStatusBadgeClass(string status)
     {
         return status switch
         {
-            "подтвержден" => "bg-success",
-            "в обработке" => "bg-warning",
-            "отменен" => "bg-danger",
-            "завершен" => "bg-secondary",
+            "received" => "bg-warning",
+            "preparing" => "bg-info",
+            "served" => "bg-success",
+            "paid" => "bg-secondary",
             _ => "bg-primary"
         };
     }
@@ -478,14 +609,13 @@ else
     {
         return status switch
         {
-            "подтверждено" => "bg-success",
-            "ожидает" => "bg-warning",
-            "отменено" => "bg-danger",
-            "завершено" => "bg-secondary",
+            "confirmed" => "bg-success",
+            "canceled" => "bg-danger",
             _ => "bg-primary"
         };
     }
 }
+
 <script>
     // Инициализация модальных окон
     document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {

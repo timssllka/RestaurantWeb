@@ -14,7 +14,7 @@ public partial class Client
 
     public string Phone { get; set; } = null!;
 
-    public string Email { get; set; } = null!;
+    public string? Email { get; set; }
 
     public string? Allergies { get; set; }
 

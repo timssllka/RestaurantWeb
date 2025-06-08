@@ -18,7 +18,7 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
 
-                        @if(User.Claims.FirstOrDefault(x=>x.Value == "администратор")!=null)
+                        @if(User.Claims.FirstOrDefault(x=>x.Value == "1")!=null)
                         {
                             <a href="/admin" class="btn btn-light">
                                 <i class="bi bi-box-arrow-in-left me-2"></i>АдминПанель

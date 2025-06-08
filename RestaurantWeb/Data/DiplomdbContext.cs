@@ -37,11 +37,15 @@ public partial class DiplomdbContext : DbContext
 
     public virtual DbSet<Reservation> Reservations { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     public virtual DbSet<Table> Tables { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -49,8 +53,6 @@ public partial class DiplomdbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresExtension("pgcrypto");
-
         modelBuilder.Entity<Client>(entity =>
         {
             entity.HasKey(e => e.ClientId).HasName("clients_pkey");
@@ -86,6 +88,7 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Clients)
                 .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("clients_user_id_fkey");
         });
 
@@ -147,12 +150,10 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.Dish).WithMany(p => p.DishIngredients)
                 .HasForeignKey(d => d.DishId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("dish_ingredients_dish_id_fkey");
 
             entity.HasOne(d => d.Ingredient).WithMany(p => p.DishIngredients)
                 .HasForeignKey(d => d.IngredientId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("dish_ingredients_ingredient_id_fkey");
         });
 
@@ -163,7 +164,6 @@ public partial class DiplomdbContext : DbContext
             entity.ToTable("employees");
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.AccessLevel).HasColumnName("access_level");
             entity.Property(e => e.FullName)
                 .HasMaxLength(100)
                 .HasColumnName("full_name");
@@ -171,6 +171,12 @@ public partial class DiplomdbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("position");
             entity.Property(e => e.Schedule).HasColumnName("schedule");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Employees)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("employees_user_id_fkey");
         });
 
         modelBuilder.Entity<Ingredient>(entity =>
@@ -191,6 +197,7 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.Supplier).WithMany(p => p.Ingredients)
                 .HasForeignKey(d => d.SupplierId)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("ingredients_supplier_id_fkey");
         });
 
@@ -219,10 +226,12 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.Client).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.ClientId)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("orders_client_id_fkey");
 
             entity.HasOne(d => d.Table).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.TableId)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("orders_table_id_fkey");
         });
 
@@ -238,12 +247,10 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.Dish).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.DishId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("order_items_dish_id_fkey");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.OrderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("order_items_order_id_fkey");
         });
 
@@ -276,12 +283,10 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasOne(d => d.Dish).WithMany(p => p.PromotionDishes)
                 .HasForeignKey(d => d.DishId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("promotion_dishes_dish_id_fkey");
 
             entity.HasOne(d => d.Promotion).WithMany(p => p.PromotionDishes)
                 .HasForeignKey(d => d.PromotionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("promotion_dishes_promotion_id_fkey");
         });
 
@@ -304,17 +309,35 @@ public partial class DiplomdbContext : DbContext
             entity.Property(e => e.SpecialRequests).HasColumnName("special_requests");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
-                .HasDefaultValueSql("'подтверждено'::character varying")
+                .HasDefaultValueSql("'confirmed'::character varying")
                 .HasColumnName("status");
             entity.Property(e => e.TableId).HasColumnName("table_id");
 
             entity.HasOne(d => d.Client).WithMany(p => p.Reservations)
                 .HasForeignKey(d => d.ClientId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("reservations_client_id_fkey");
 
             entity.HasOne(d => d.Table).WithMany(p => p.Reservations)
                 .HasForeignKey(d => d.TableId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("reservations_table_id_fkey");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("roles_pkey");
+
+            entity.ToTable("roles", tb => tb.HasComment("Системные роли пользователей"));
+
+            entity.HasIndex(e => e.RoleName, "roles_role_name_key").IsUnique();
+
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.RoleName)
+                .HasMaxLength(50)
+                .HasComment("Уникальное название роли на английском")
+                .HasColumnName("role_name");
         });
 
         modelBuilder.Entity<Supplier>(entity =>
@@ -345,7 +368,7 @@ public partial class DiplomdbContext : DbContext
                 .HasColumnName("location");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
-                .HasDefaultValueSql("'свободен'::character varying")
+                .HasDefaultValueSql("'free'::character varying")
                 .HasColumnName("status");
             entity.Property(e => e.Type)
                 .HasMaxLength(20)
@@ -360,16 +383,49 @@ public partial class DiplomdbContext : DbContext
 
             entity.HasIndex(e => e.Username, "idx_users_username");
 
+            entity.HasIndex(e => e.Email, "users_email_key").IsUnique();
+
             entity.HasIndex(e => e.Username, "users_username_key").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .HasColumnName("email");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
             entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
-            entity.Property(e => e.Role)
-                .HasMaxLength(20)
-                .HasColumnName("role");
             entity.Property(e => e.Username)
                 .HasMaxLength(50)
                 .HasColumnName("username");
+        });
+
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.RoleId }).HasName("user_roles_pkey");
+
+            entity.ToTable("user_roles", tb => tb.HasComment("Связь пользователей с ролями"));
+
+            entity.HasIndex(e => new { e.UserId, e.RoleId }, "idx_user_roles");
+
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.RoleId).HasColumnName("role_id");
+            entity.Property(e => e.AssignedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("assigned_at");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.UserRoles)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("user_roles_role_id_fkey");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserRoles)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("user_roles_user_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

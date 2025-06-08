@@ -8,6 +8,8 @@ using System.Text;
 
 namespace RestaurantWeb.Pages.Register
 {
+   
+
     public class IndexModel : PageModel
     {
         private readonly DiplomdbContext _context;
@@ -15,91 +17,76 @@ namespace RestaurantWeb.Pages.Register
         public IndexModel(DiplomdbContext context)
         {
             _context = context;
+
         }
-
         [BindProperty]
-        public string Username { get; set; }
-
-        [BindProperty]
-        public string Password { get; set; }
-
-        [BindProperty]
-        [Required(ErrorMessage = "Подтверждение пароля обязательно")]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
-        public string ConfirmPassword { get; set; }
-
-        [BindProperty]
-        [Required(ErrorMessage = "ФИО обязательно")]
-        public string FullName { get; set; }
-
-        [BindProperty]
-        [Required(ErrorMessage = "Email обязателен")]
-        [EmailAddress(ErrorMessage = "Некорректный email")]
-        public string Email { get; set; }
-
-        [BindProperty]
-        [Required(ErrorMessage = "Телефон обязателен")]
-        public string Phone { get; set; }
-
-        [BindProperty]
-        public string Allergies { get; set; }
+        public RegisterViewModel Input { get; set; }
 
         public string ErrorMessage { get; set; }
 
+        public void OnGet() { }
 
-        public void OnGet()
-        {
-        }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!ModelState.IsValid)
+                return Page();
 
-            // Проверка пароля
-            if (string.IsNullOrEmpty(Password))
+            // Проверка на уникальность username и email
+            if (await _context.Users.AnyAsync(u => u.Username == Input.Username))
             {
-                ErrorMessage = "Пароль обязателен";
+                ErrorMessage = "Пользователь с таким логином уже существует.";
                 return Page();
             }
-
-            // Проверка уникальности логина
-            if (await _context.Users.AnyAsync(u => u.Username == Username))
+            if (await _context.Users.AnyAsync(u => u.Email == Input.Email))
             {
-                ErrorMessage = "Пользователь с таким логином уже существует";
+                ErrorMessage = "Пользователь с таким email уже существует.";
                 return Page();
             }
-
-            // Проверка уникальности email
-            if (await _context.Clients.AnyAsync(c => c.Email == Email))
-            {
-                ErrorMessage = "Пользователь с таким email уже существует";
-                return Page();
-            }
+            string passwordHash = HashPassword(Input.Password);
 
             // Создание пользователя
             var user = new User
             {
-                Username = Username,
-                PasswordHash = HashPassword(Password),
-                Role = "клиент"
+                Username = Input.Username,
+                Email = Input.Email,
+                PasswordHash = passwordHash,
+                IsActive = true
             };
-
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // Создание клиента
+            // Получаем id роли "client"
+            var clientRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "client");
+            if (clientRole == null)
+            {
+                ErrorMessage = "Роль 'client' не найдена в базе.";
+                return Page();
+            }
+
+            // Назначаем роль пользователю
+            _context.UserRoles.Add(new UserRole
+            {
+                UserId = user.UserId,
+                RoleId = clientRole.RoleId
+            });
+
+            // Создаём запись в clients
             var client = new Client
             {
-                FullName = FullName,
-                Email = Email,
-                Phone = Phone,
-                Allergies = Allergies,
+                FullName = Input.FullName,
+                Phone = Input.Phone,
+                Email = Input.Email,
                 UserId = user.UserId
             };
-
             _context.Clients.Add(client);
+
             await _context.SaveChangesAsync();
 
-            return Redirect("/Login");
+            // После успешной регистрации можно перенаправить на страницу входа или приветствия
+            return RedirectToPage("/Login");
+
+           
 
         }
         private static string HashPassword(string password)
@@ -108,6 +95,25 @@ namespace RestaurantWeb.Pages.Register
             var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
             return BitConverter.ToString(bytes).Replace("-", "").ToLower();
         }
+    }
+    public class RegisterViewModel
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+        [Required]
+        [DataType(DataType.Password)]
+        [Compare("Password")]
+        public string ConfirmPassword { get; set; }
+        [Required]
+        public string FullName { get; set; }
+        [Required]
+        public string Phone { get; set; }
     }
 
 }

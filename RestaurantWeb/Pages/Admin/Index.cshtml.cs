@@ -17,9 +17,9 @@ namespace RestaurantWeb.Pages.Admin
         {
             _context = context;
             _logger = logger;
-
+            DishCategories = _context.DishCategories.ToList();
         }
-
+        public List<DishCategory> DishCategories;
 
         public DiplomdbContext Context { get { return _context; } }
 
@@ -33,31 +33,15 @@ namespace RestaurantWeb.Pages.Admin
                 .ToList();
             _logger.LogInformation("All roles: {@Roles}", roles);
 
-            var adminRoleBytes = Encoding.UTF8.GetBytes("администратор");
-            var isAdmin = User.Claims.Any(c =>
-                (c.Type == ClaimTypes.Role || c.Type.EndsWith("claims/role")) &&
-                Encoding.UTF8.GetBytes(c.Value.Trim()).SequenceEqual(adminRoleBytes)
-            );
+            var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "1");
 
             _logger.LogInformation($"isAdmin:{isAdmin}");
-            // Проверка через IsInRole
             if (isAdmin)
             {
                 _logger.LogInformation("Access granted via IsInRole");
                 return Page();
             }
 
-            // Прямая проверка claim
-            var roleClaim = User.Claims.FirstOrDefault(x =>
-                (x.Type == ClaimTypes.Role || x.Type.EndsWith("claims/role")) &&
-                x.Value.Trim().Equals("администратор", StringComparison.OrdinalIgnoreCase)
-            );
-
-            if (roleClaim != null)
-            {
-                _logger.LogInformation("Access granted via claim check");
-                return Page();
-            }
 
             _logger.LogError("Role 'администратор' not found. Available roles: {@Roles}", roles);
             return Redirect("/Home");

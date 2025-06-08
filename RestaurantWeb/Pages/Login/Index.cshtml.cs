@@ -28,17 +28,17 @@ namespace RestaurantWeb.Pages.Login
                 .FirstOrDefaultAsync(u =>
                     u.Username == Username &&
                     u.PasswordHash == HashPassword(Password));
-
             if (user == null)
             {
                 ErrorMessage = "Неверный логин или пароль";
                 return Page();
             }
+            UserRole userRole = await _context.UserRoles.FirstOrDefaultAsync(r=>r.UserId == user.UserId);
             // Создаем куки аутентификации
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, userRole.RoleId.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(
