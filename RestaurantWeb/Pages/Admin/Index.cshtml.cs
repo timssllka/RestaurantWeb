@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace RestaurantWeb.Pages.Admin
 {
-    
+
     public class IndexModel : PageModel
     {
         private readonly DiplomdbContext _context;
@@ -18,7 +18,7 @@ namespace RestaurantWeb.Pages.Admin
             _logger = logger;
 
         }
-      
+
 
         public DiplomdbContext Context { get { return _context; } }
 
@@ -29,8 +29,11 @@ namespace RestaurantWeb.Pages.Admin
             _logger.LogInformation("All user claims: {@Claims}", User.Claims.ToList());
 
             // Сравниваем без учета регистра и с триммингом
+            //var role = User.Claims.FirstOrDefault(x =>
+            //    x.Value.Equals("администратор", StringComparison.OrdinalIgnoreCase));
             var role = User.Claims.FirstOrDefault(x =>
-                x.Value.Equals("администратор", StringComparison.OrdinalIgnoreCase));
+    x.Type == ClaimTypes.Role &&
+    x.Value.Trim().Contains("админ", StringComparison.OrdinalIgnoreCase));
 
             if (role != null)
             {
