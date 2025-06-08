@@ -37,12 +37,12 @@ namespace RestaurantWeb.Pages.Admin
 
             if (role != null)
             {
-                _logger.LogInformation("Admin not found");
+                _logger.LogInformation("Admin found");
                 return Page();
             }
             else
             {
-                _logger.LogWarning("Admin not found. Доступные роли: {Roles}",
+                _logger.LogWarning("Admin not found. Доступные roles: {Roles}",
                     string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)));
                 return Redirect("/Home");
             }
