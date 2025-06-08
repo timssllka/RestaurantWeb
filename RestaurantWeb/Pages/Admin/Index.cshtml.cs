@@ -39,15 +39,21 @@ namespace RestaurantWeb.Pages.Admin
             //    _logger.LogInformation("Access granted via IsInRole");
             //    return Page();
             //}
-           
-                if (roles.Contains("администратор"))
-                {
-                    return Page();
-                }
-            
 
-                // Прямая проверка claim
-                var roleClaim = User.Claims.FirstOrDefault(x =>
+            if (roles.Contains("администратор"))
+            {
+                return Page();
+            }
+            else
+            {
+                _logger.LogError("49. Role администратор not found.");
+                _logger.LogError("50. Available roles: {@Roles}", roles);
+
+            }
+
+
+            // Прямая проверка claim
+            var roleClaim = User.Claims.FirstOrDefault(x =>
                     (x.Type == ClaimTypes.Role || x.Type.EndsWith("claims/role")) &&
                     x.Value.Trim().Equals("администратор", StringComparison.OrdinalIgnoreCase)
                 );
