@@ -33,8 +33,14 @@ namespace RestaurantWeb.Pages.Admin
                 .ToList();
             _logger.LogInformation("All roles: {@Roles}", roles);
 
+            var adminRoleBytes = Encoding.UTF8.GetBytes("администратор");
+            var isAdmin = User.Claims.Any(c =>
+                (c.Type == ClaimTypes.Role || c.Type.EndsWith("claims/role")) &&
+                Encoding.UTF8.GetBytes(c.Value.Trim()).SequenceEqual(adminRoleBytes)
+            );
+
             // Проверка через IsInRole
-            if (User.IsInRole("администратор"))
+            if (isAdmin)
             {
                 _logger.LogInformation("Access granted via IsInRole");
                 return Page();
