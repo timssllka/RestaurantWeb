@@ -524,6 +524,7 @@
                 </div>
 
                 <div class="row">
+                    @if(Model.DishCategories!=null)
                     @foreach (var category in Model.DishCategories.OrderBy(c => c.Name))
                     {
                         <div class="col-md-3 mb-4">
@@ -558,6 +559,101 @@
         </main>
     </div>
 </div>
+
+<!-- Модальное окно добавления пользователя -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page="/Admin/Index" asp-page-handler="AddUser">
+                @Html.AntiForgeryToken();
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Логин</label>
+                        <input type="text" class="form-control" name="Username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Пароль</label>
+                        <input type="password" class="form-control" name="Password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Роли</label>
+                        <select class="form-select" name="Roles" multiple>
+                            @foreach (var role in Model.Context.Roles)
+                            {
+                                <option value="@role.RoleId">@role.RoleName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования пользователя -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <!-- Аналогично добавлению, но с заполненными полями -->
+</div>
+
+<!-- Модальное окно добавления блюда -->
+<div class="modal fade" id="addDishModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="AddDish" enctype="multipart/form-data">
+                @Html.AntiForgeryToken();
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить блюдо</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Название</label>
+                        <input type="text" class="form-control" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Категория</label>
+                        <select class="form-select" name="CategoryId" required>
+                            @foreach (var category in Model.Context.DishCategories)
+                            {
+                                <option value="@category.CategoryId">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Цена</label>
+                        <input type="number" step="0.01" class="form-control" name="Price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Состав</label>
+                        <textarea class="form-control" name="Composition" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Изображение</label>
+                        <input type="file" class="form-control" name="ImageFile" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 @functions {
     string GetOrderStatus(string status)

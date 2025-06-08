@@ -27,7 +27,7 @@ namespace RestaurantWeb.Pages.Login
             var user = await _context.Users
                 .FirstOrDefaultAsync(u =>
                     u.Username == Username &&
-                    u.PasswordHash == HashPassword(Password));
+                    u.PasswordHash == manager.HashPassword(Password));
             if (user == null)
             {
                 ErrorMessage = "Неверный логин или пароль";
@@ -51,12 +51,7 @@ namespace RestaurantWeb.Pages.Login
             return Redirect("/Home");
         }
 
-        private static string HashPassword(string password)
-        {
-            using var sha = SHA256.Create();
-            var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return BitConverter.ToString(bytes).Replace("-", "").ToLower();
-        }
+        
 
     }
 }
