@@ -5,7 +5,22 @@
     Layout = "_Layout";
     ViewData["Title"] = "Админ панель";
 }
+@* @if (User.Identity?.IsAuthenticated == true)
+{
 
+    @if (User.Claims.FirstOrDefault(x => x.Value == "администратор") != null)
+    {
+
+    }
+    else
+    {
+        Redirect("/Home");
+    }
+}
+else
+{
+    Redirect("/Home");
+} *@
 <div class="container-fluid">
     <div class="row">
         <!-- Левая боковая панель -->
@@ -212,7 +227,7 @@
                                 <i class="bi bi-clock me-2"></i>Скоро истекает срок
                             </h5>
                             <ul class="admin-list">
-                               @*  @foreach (var ingredient in Model.Context.Ingredients
+                                @*  @foreach (var ingredient in Model.Context.Ingredients
                                                                 .Where(i => i.ExpirationDate.HasValue && (i.ExpirationDate) < ( DateTime.Now.AddDays(7)))
                                                                 .OrderBy(i => i.ExpirationDate)
                                                                 .Take(5))
@@ -242,8 +257,8 @@
                                                         .OrderBy(i => i.Name))
                             {
                                 <tr class="@(ingredient.Quantity < 5 ? "table-danger" :
-                                                                    (ingredient.ExpirationDate.HasValue &&
-                                                                    ingredient.ExpirationDate.Value.ToDateTime(TimeOnly.MinValue) < DateTime.Now.AddDays(3)) ? "table-warning" : "")">
+                                                                                                                                                                                                                            (ingredient.ExpirationDate.HasValue &&
+                                                                                                                                                                                                                            ingredient.ExpirationDate.Value.ToDateTime(TimeOnly.MinValue) < DateTime.Now.AddDays(3)) ? "table-warning" : "")">
                                 <td>@ingredient.IngredientId</td>
                                 <td>@ingredient.Name</td>
                                 <td>@ingredient.Quantity</td>
@@ -442,12 +457,10 @@
         </main>
     </div>
 </div>
-<!-- Модальные окна (добавьте формы для каждого) -->
-@* @await Html.PartialAsync("_AddStaffModal")
-@await Html.PartialAsync("_AddIngredientModal")
-@await Html.PartialAsync("_AddSupplierModal")
-@await Html.PartialAsync("_AddPromoModal")
- *@
+
+
+
+
 @functions {
     string GetOrderStatusBadgeClass(string status)
     {

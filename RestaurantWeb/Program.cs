@@ -34,6 +34,11 @@ builder.Services.AddDbContext<DiplomdbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
+// Настройка логгирования
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole(); // Логи в консоль
+builder.Logging.AddDebug();   // Логи в Debug-окно (Visual Studio)
+
 var app = builder.Build();
 
 // Middleware
