@@ -6,7 +6,7 @@ using RestaurantWeb.Data;
 
 namespace RestaurantWeb.Pages.Admin
 {
-
+    
     public class IndexModel : PageModel
     {
         private readonly DiplomdbContext _context;
