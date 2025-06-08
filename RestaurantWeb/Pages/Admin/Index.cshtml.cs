@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using RestaurantWeb.Data;
 using System.Security.Claims;
+using System.Text;
 
 namespace RestaurantWeb.Pages.Admin
 {
@@ -25,25 +26,35 @@ namespace RestaurantWeb.Pages.Admin
 
         public IActionResult OnGet()
         {
-            // Логируем все claims для диагностики
-            _logger.LogInformation("All user claims: {@Claims}", User.Claims.ToList());
-
-            // Сравниваем без учета регистра и с триммингом
-            //var role = User.Claims.FirstOrDefault(x =>
-            //    x.Value.Equals("администратор", StringComparison.OrdinalIgnoreCase));
-            var role = User.Claims.FirstOrDefault(x =>
-    x.Type == ClaimTypes.Role &&
-    x.Value.Trim().Contains("админ", StringComparison.OrdinalIgnoreCase));
-
-            if (role != null)
+            var roleClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            if (roleClaim != null)
             {
-                _logger.LogInformation("Admin found");
+                _logger.LogInformation(
+                    "Role claim debug: Value='{Value}', Length={Length}, Bytes={Bytes}",
+                    roleClaim.Value,
+                    roleClaim.Value.Length,
+                    BitConverter.ToString(Encoding.UTF8.GetBytes(roleClaim.Value))
+                );
+
+                // Для "администратор" ожидаемые байты:
+                // D0-B0-D0-B4-D0-BC-D0-B8-D0-BD-D0-B8-D1-81-D1-82-D1-80-D0-B0-D1-82-D0-BE-D1-80
+            }
+
+
+            var isAdmin = User.Claims.Any(c =>
+    c.Type == ClaimTypes.Role &&
+    string.Equals(
+        c.Value.Normalize(),
+        "администратор".Normalize(),
+        StringComparison.OrdinalIgnoreCase
+    )
+);
+            if (isAdmin)
+            {
                 return Page();
             }
             else
             {
-                _logger.LogWarning("Admin not found. Доступные roles: {Roles}",
-                    string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)));
                 return Redirect("/Home");
             }
 
