@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using RestaurantWeb.Data;
+using System.Security.Claims;
 
 namespace RestaurantWeb.Pages.Admin
 {
@@ -24,21 +25,23 @@ namespace RestaurantWeb.Pages.Admin
 
         public IActionResult OnGet()
         {
-            var claims = User.Claims.ToList();
-            _logger.LogInformation("User claims: {@Claims}", claims); // Добавьте это
+            // Логируем все claims для диагностики
+            _logger.LogInformation("All user claims: {@Claims}", User.Claims.ToList());
 
-            var role = claims.FirstOrDefault(x => x.Value == "администратор");
+            // Сравниваем без учета регистра и с триммингом
+            var role = User.Claims.FirstOrDefault(x =>
+                x.Value.Equals("администратор", StringComparison.OrdinalIgnoreCase));
+
             if (role != null)
             {
-                _logger.LogInformation("Роль 'администратор' найдена");
+                _logger.LogInformation("Admin not found");
                 return Page();
-
             }
             else
             {
-                _logger.LogWarning("Роль 'администратор' не найдена. Перенаправление на /Home");
+                _logger.LogWarning("Admin not found. Доступные роли: {Roles}",
+                    string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)));
                 return Redirect("/Home");
-
             }
 
         }
