@@ -26,50 +26,34 @@ namespace RestaurantWeb.Pages.Admin
 
         public IActionResult OnGet()
         {
-            // Получаем все роли с нормализацией
+            // Логируем все роли
             var roles = User.Claims
                 .Where(c => c.Type == ClaimTypes.Role || c.Type.EndsWith("claims/role"))
-                .Select(c => c.Value.Normalize())
+                .Select(c => c.Value)
                 .ToList();
+            _logger.LogInformation("All roles: {@Roles}", roles);
 
-            _logger.LogInformation("All roles (normalized): {@Roles}", roles);
-
-            // Сравниваем с нормализованной строкой
-            if (roles.Any(r =>
-                string.Equals(
-                    r,
-                    "администратор".Normalize(),
-                    StringComparison.OrdinalIgnoreCase
-                )))
+            // Проверка через IsInRole
+            if (User.IsInRole("администратор"))
             {
-                _logger.LogInformation("Access granted - admin role found");
+                _logger.LogInformation("Access granted via IsInRole");
                 return Page();
             }
 
-            // Дополнительная проверка через байтовое сравнение
-            var adminBytes = Encoding.UTF8.GetBytes("администратор");
-            foreach (var role in User.Claims
-                .Where(c => c.Type == ClaimTypes.Role || c.Type.EndsWith("claims/role")))
+            // Прямая проверка claim
+            var roleClaim = User.Claims.FirstOrDefault(x =>
+                (x.Type == ClaimTypes.Role || x.Type.EndsWith("claims/role")) &&
+                x.Value.Trim().Equals("администратор", StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (roleClaim != null)
             {
-                var roleBytes = Encoding.UTF8.GetBytes(role.Value);
-                if (adminBytes.SequenceEqual(roleBytes))
-                {
-                    _logger.LogInformation("Access granted via byte comparison");
-                    return Page();
-                }
+                _logger.LogInformation("Access granted via claim check");
+                return Page();
             }
 
-            _logger.LogError("Admin role not found. All roles: {@Roles}",
-                User.Claims
-                    .Where(c => c.Type == ClaimTypes.Role || c.Type.EndsWith("claims/role"))
-                    .Select(c => new {
-                        Value = c.Value,
-                        Bytes = BitConverter.ToString(Encoding.UTF8.GetBytes(c.Value))
-                    }));
-
+            _logger.LogError("Role 'администратор' not found. Available roles: {@Roles}", roles);
             return Redirect("/Home");
-
-
         }
     }
 }
