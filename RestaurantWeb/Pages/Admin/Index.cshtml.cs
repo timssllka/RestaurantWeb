@@ -39,6 +39,7 @@ namespace RestaurantWeb.Pages.Admin
                 Encoding.UTF8.GetBytes(c.Value.Trim()).SequenceEqual(adminRoleBytes)
             );
 
+            _logger.LogInformation($"isAdmin:{isAdmin}");
             // Проверка через IsInRole
             if (isAdmin)
             {
