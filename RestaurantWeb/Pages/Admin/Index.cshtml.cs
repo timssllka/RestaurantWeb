@@ -34,18 +34,17 @@ namespace RestaurantWeb.Pages.Admin
             _logger.LogInformation("All roles: {@Roles}", roles);
 
             // Проверка через IsInRole
-            if (User.IsInRole("администратор"))
-            {
-                _logger.LogInformation("Access granted via IsInRole");
-                return Page();
-            }
-            else
-            {
+            //if (User.IsInRole("администратор"))
+            //{
+            //    _logger.LogInformation("Access granted via IsInRole");
+            //    return Page();
+            //}
+           
                 if (roles.Contains("администратор"))
                 {
                     return Page();
                 }
-            }
+            
 
                 // Прямая проверка claim
                 var roleClaim = User.Claims.FirstOrDefault(x =>
