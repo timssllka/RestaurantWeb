@@ -26,35 +26,40 @@ namespace RestaurantWeb.Pages.Admin
 
         public IActionResult OnGet()
         {
-            // Логируем все claims для диагностики
-            _logger.LogInformation("All user claims: {@Claims}", User.Claims.Select(c => new { c.Type, c.Value }));
+            // Логируем все роли
+            var roles = User.Claims
+                .Where(c => c.Type == ClaimTypes.Role || c.Type.EndsWith("claims/role"))
+                .Select(c => c.Value)
+                .ToList();
+            _logger.LogInformation("All roles: {@Roles}", roles);
 
-            // Проверяем роль через Identity (если используется)
+            // Проверка через IsInRole
             if (User.IsInRole("администратор"))
             {
-                _logger.LogInformation("Admin access granted via Identity");
+                _logger.LogInformation("Access granted via IsInRole");
                 return Page();
             }
+            else
+            {
+                if (roles.Contains("администратор"))
+                {
+                    return Page();
+                }
+            }
 
-            // Альтернативная проверка для страховки
-            var roleClaim = User.Claims.FirstOrDefault(c =>
-                c.Type == ClaimTypes.Role &&
-                string.Equals(
-                    c.Value.Normalize(NormalizationForm.FormC),
-                    "администратор".Normalize(NormalizationForm.FormC),
-                    StringComparison.OrdinalIgnoreCase
-                )
-            );
+                // Прямая проверка claim
+                var roleClaim = User.Claims.FirstOrDefault(x =>
+                    (x.Type == ClaimTypes.Role || x.Type.EndsWith("claims/role")) &&
+                    x.Value.Trim().Equals("администратор", StringComparison.OrdinalIgnoreCase)
+                );
 
             if (roleClaim != null)
             {
-                _logger.LogInformation("Admin access granted via direct claim check");
+                _logger.LogInformation("Access granted via claim check");
                 return Page();
             }
 
-            _logger.LogWarning("Admin role not found. Available roles: {Roles}",
-                string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)));
-
+            _logger.LogError("Role 'администратор' not found. Available roles: {@Roles}", roles);
             return Redirect("/Home");
 
 
