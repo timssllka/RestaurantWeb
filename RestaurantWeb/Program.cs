@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using RestaurantWeb;
 using RestaurantWeb.Data;
@@ -8,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddResponseCaching();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/var/aspnet-keys/"))
+    .SetApplicationName("RestaurantWeb");
 
 // Настройка политик авторизации
 builder.Services.AddAuthorization(options =>
