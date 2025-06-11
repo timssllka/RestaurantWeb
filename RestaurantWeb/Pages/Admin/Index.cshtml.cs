@@ -14,13 +14,15 @@ namespace RestaurantWeb.Pages.Admin
         private readonly DiplomdbContext _context;
         private readonly ILogger<IndexModel> _logger;
         private readonly IWebHostEnvironment _env;
+        public List<DishCategory> DishCategories;
+
         public IndexModel(DiplomdbContext context, ILogger<IndexModel> logger, IWebHostEnvironment env)
         {
             _context = context;
             _logger = logger;
             _env = env;
         }
-        public List<DishCategory> DishCategories;
+
 
         public DiplomdbContext Context { get { return _context; } }
         public async Task<IActionResult> OnGetAsync()
@@ -47,22 +49,42 @@ namespace RestaurantWeb.Pages.Admin
             return Redirect("/Home");
         }
         // Добавление пользователя
-        public async Task<IActionResult> OnPostAddUserAsync(string Username,string Email,string Password,string Roles)
+        public async Task<IActionResult> OnPostAddUserAsync(string Username,string Email,string Password,List<string> Roles)
         {
             try
             {
+                // Проверка валидности модели
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                // Хешируем пароль (убедитесь, что класс менеджера доступен!)
+                var hashedPassword = manager.HashPassword(Password); // Подставьте реализацию hash-менеджера!
+
                 var user = new User
                 {
                     Username = Username,
                     Email = Email,
-                    PasswordHash = manager.HashPassword(Password),
-
+                    PasswordHash = hashedPassword
                 };
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
-                var role = await _context.Roles.FirstOrDefaultAsync(x=>x.RoleName == Roles);
-                _context.UserRoles.Add(new UserRole() { RoleId = (role.RoleId), UserId = user.UserId});
+
+                // Проходим по всем выбранным ролям и назначаем их новому пользователю
+                foreach (var roleName in Roles)
+                {
+                    var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
+                    if (role != null)
+                    {
+                        _context.UserRoles.Add(new UserRole()
+                        {
+                            RoleId = role.RoleId,
+                            UserId = user.UserId
+                        });
+                    }
+                }
                 await _context.SaveChangesAsync();
 
                 return RedirectToPage();
@@ -70,6 +92,29 @@ namespace RestaurantWeb.Pages.Admin
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при добавлении пользователя");
+                return Page();
+            }
+        }
+        // удаление пользователя
+
+        public async Task<IActionResult> OnPostDeleteUserAsync(int UserId)
+        {
+            try
+            {
+                var user = await _context.Users.FindAsync(UserId);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+
+                return RedirectToPage();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при удалении пользователя");
                 return Page();
             }
         }
@@ -86,10 +131,10 @@ namespace RestaurantWeb.Pages.Admin
                     CategoryId = CategoryId,
                     Price = Price,
                     Composition = Composition,
-                    
+
                 };
 
-                
+
 
                 _context.Dishes.Add(dish);
                 await _context.SaveChangesAsync();
@@ -117,7 +162,7 @@ namespace RestaurantWeb.Pages.Admin
             dish.Price = Price;
             dish.Composition = Composition;
 
-            
+
 
             await _context.SaveChangesAsync();
             return RedirectToPage();
@@ -131,7 +176,7 @@ namespace RestaurantWeb.Pages.Admin
                 return NotFound();
             }
 
-            
+
 
             _context.Dishes.Remove(dish);
             await _context.SaveChangesAsync();

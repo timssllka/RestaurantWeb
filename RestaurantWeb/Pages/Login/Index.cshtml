@@ -36,7 +36,7 @@
                     </div>
                 }
 
-                <form method="post" asp-page="/Login/Index" id="loginForm" novalidate>
+                <form method="post" asp-page-handler="AddUser" id="loginForm" novalidate>
                     @Html.AntiForgeryToken()
 
                     <div class="mb-4">

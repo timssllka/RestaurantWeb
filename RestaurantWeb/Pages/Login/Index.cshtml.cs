@@ -48,6 +48,8 @@ namespace RestaurantWeb.Pages.Login
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity));
 
+            if(userRole.RoleId == 1)
+            return Redirect("/Admin");
             return Redirect("/Home");
         }
 
