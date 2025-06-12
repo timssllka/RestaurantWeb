@@ -48,6 +48,8 @@ namespace RestaurantWeb.Pages.Admin
             _logger.LogError("Role 'администратор' not found. Available roles: {@Roles}", roles);
             return Redirect("/Home");
         }
+
+        #region Пользователи
         // Добавление пользователя
         public async Task<IActionResult> OnPostAddUserAsync(string Username,string Email,string Password,List<string> Roles)
         {
@@ -75,7 +77,7 @@ namespace RestaurantWeb.Pages.Admin
                 // Проходим по всем выбранным ролям и назначаем их новому пользователю
                 foreach (var roleName in Roles)
                 {
-                    var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
+                    var role = await _context.Roles.FirstOrDefaultAsync(r => r.RoleId == int.Parse(roleName));
                     if (role != null)
                     {
                         _context.UserRoles.Add(new UserRole()
@@ -96,8 +98,7 @@ namespace RestaurantWeb.Pages.Admin
             }
         }
         // удаление пользователя
-
-        public async Task<IActionResult> OnPostDeleteUserAsync(int UserId)
+        public async Task<IActionResult> OnPostDeleteUserAsync  (int UserId)
         {
             try
             {
@@ -118,7 +119,87 @@ namespace RestaurantWeb.Pages.Admin
                 return Page();
             }
         }
+        // Редактирование пользователя
+        public async Task<IActionResult> OnPostEditUserAsync(int UserId, string Username, string Email)
+        {
+            try
+            {
+                var user = await _context.Users.FindAsync(UserId);
+                if (user == null)
+                {
+                    return NotFound();
+                }
 
+                user.Username = Username;
+                user.Email = Email;
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при редактировании пользователя");
+                return Page();
+            }
+        }
+        #endregion
+
+        #region Роли
+        // Добавление роли
+     
+        // Редактирование роли
+        public async Task<IActionResult> OnPostEditRoleAsync(int RoleId, string RoleName, string Description)
+        {
+            try
+            {
+                var role = await _context.Roles.FindAsync(RoleId);
+                if (role == null)
+                {
+                    return NotFound();
+                }
+
+                role.RoleName = RoleName;
+                role.Description = Description;
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при редактировании роли");
+                return Page();
+            }
+        }
+
+        // Удаление роли
+        public async Task<IActionResult> OnPostDeleteRoleAsync(int RoleId)
+        {
+            try
+            {
+                var role = await _context.Roles.FindAsync(RoleId);
+                if (role == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Roles.Remove(role);
+                await _context.SaveChangesAsync();
+                return RedirectToPage();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при удалении роли");
+                return Page();
+            }
+        }
+        #endregion
+
+
+        #region Роли
+        #endregion
+
+        #region Роли
+        #endregion
         // Добавление блюда
         public async Task<IActionResult> OnPostAddDishAsync(string Name, int CategoryId, decimal Price,
             string Composition, IFormFile ImageFile)

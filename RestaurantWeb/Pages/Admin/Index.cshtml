@@ -138,6 +138,7 @@
                     </button>
                 </div>
 
+
                 <div class="admin-table-container">
                     <table class="table admin-table">
                         <thead>
@@ -175,23 +176,59 @@
                                         
                                     </td>
                                     <td>
-                                        <!-- Кнопка редактирования -->
-                                        <button class="btn btn-admin-sm me-1 edit-user-btn"
+                                        <!-- Измененная кнопка редактирования -->
+                                        <button class="btn btn-admin-sm me-1"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#editUserModal"
-                                                data-userid="@user.UserId"
-                                                data-username="@user.Username"
-                                                data-email="@user.Email">
+                                                data-bs-target="#editUserModal_@user.UserId">
                                             <i class="bi bi-pencil"></i>
                                         </button>
 
-                                        <!-- Кнопка удаления -->
-                                        <button class="btn btn-admin-sm btn-danger delete-user-btn"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#deleteUserModal"
-                                                data-userid="@user.UserId">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <!-- Форма для удаления -->
+                                        <form method="post" asp-page-handler="DeleteUser" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="UserId" value="@user.UserId" />
+                                            <button type="submit" class="btn btn-admin-sm btn-danger"
+                                                    onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?');">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Модальное окно редактирования с уникальным ID -->
+                                        <div class="modal fade" id="editUserModal_@user.UserId" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form method="post" asp-page-handler="EditUser">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="UserId" value="@user.UserId" />
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Редактирование пользователя @user.Username</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Имя пользователя:</label>
+                                                                <input type="text" class="form-control" name="Username" value="@user.Username" required />
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Email:</label>
+                                                                <input type="email" class="form-control" name="Email" value="@user.Email" required />
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Статус:</label>
+                                                                <select class="form-select" name="IsActive">
+                                                                    <option value="true" selected="@(user.IsActive == true)">Активен</option>
+                                                                    <option value="false" selected="@(user.IsActive == false)">Неактивен</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                                                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -206,10 +243,9 @@
                     <h3 class="mb-0" style="color: var(--peach);">
                         <i class="bi bi-shield me-2"></i>Управление ролями
                     </h3>
-                    <button class="btn btn-admin" data-bs-toggle="modal" data-bs-target="#addRoleModal">
-                        <i class="bi bi-plus-circle me-1"></i>Добавить
-                    </button>
+                  
                 </div>
+              
 
                 <div class="admin-table-container">
                     <table class="table admin-table">
@@ -233,21 +269,57 @@
                                     <td>@role.Description</td>
                                     <td>@role.UserRoles.Count</td>
                                     <td>
+                                        <!-- Кнопка редактирования с модальным окном -->
                                         <button class="btn btn-admin-sm me-1"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#editRoleModal"
-                                                data-id="@role.RoleId">
+                                                data-bs-target="#editRoleModal_@role.RoleId">
                                             <i class="bi bi-pencil"></i>
                                         </button>
+
                                         @if (role.UserRoles.Count == 0)
                                         {
-                                            <button class="btn btn-admin-sm btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#deleteRoleModal"
-                                                    data-id="@role.RoleId">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <!-- Форма удаления роли -->
+                                            <form method="post" asp-page-handler="DeleteRole" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="RoleId" value="@role.RoleId" />
+                                                <button type="submit" class="btn btn-admin-sm btn-danger"
+                                                        onclick="return confirm('Вы уверены, что хотите удалить эту роль?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         }
+
+                                        <!-- Модальное окно редактирования для каждой роли (уникальный ID) -->
+                                        <div class="modal fade" id="editRoleModal_@role.RoleId" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form method="post" asp-page-handler="EditRole">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="RoleId" value="@role.RoleId" />
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Редактирование роли @role.RoleName</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Название:</label>
+                                                                <input type="text" class="form-control" name="RoleName" value="@role.RoleName" required />
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Описание:</label>
+                                                                <textarea class="form-control" name="Description" rows="3">@role.Description</textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                                                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                       
                                     </td>
                                 </tr>
                             }
@@ -613,52 +685,8 @@
         </div>
     </div>
 </div>
-
-<!-- Модальное окно редактирования пользователя -->
-<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="post" asp-page-handler="EditUser">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="UserId" id="editUserId" /> <!-- Hidden field -->
-                <div class="modal-header">
-                    <h5 class="modal-title">Редактирование пользователя</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="editUsername" class="form-label">Имя пользователя:</label>
-                        <input type="text" class="form-control" id="editUsername" name="Username" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="editEmail" class="form-label">Email:</label>
-                        <input type="email" class="form-control" id="editEmail" name="Email" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="editPassword" class="form-label">Новый пароль (оставьте пустым, если не менять):</label>
-                        <input type="password" class="form-control" id="editPassword" name="NewPassword" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="editRoles" class="form-label">Роли:</label>
-                        <select class="form-select" id="editRoles" name="Roles" multiple>
-                            @foreach (var role in Model.Context.Roles)
-                            {
-                                <option value="@role.RoleId">@role.RoleName</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
-                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- Modal для удаления пользователя -->
-<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="deleteUserModal" >
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" asp-page-handler="DeleteUser">
@@ -679,53 +707,6 @@
         </div>
     </div>
 </div>
-<!-- Модальное окно добавления блюда -->
-<div class="modal fade" id="addDishModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="post" asp-page-handler="AddDish" enctype="multipart/form-data">
-                @Html.AntiForgeryToken();
-                <div class="modal-header">
-                    <h5 class="modal-title">Добавить блюдо</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Название</label>
-                        <input type="text" class="form-control" name="Name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Категория</label>
-                        <select class="form-select" name="CategoryId" required>
-                            @foreach (var category in Model.Context.DishCategories)
-                            {
-                                <option value="@category.CategoryId">@category.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Цена</label>
-                        <input type="number" step="0.01" class="form-control" name="Price" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Состав</label>
-                        <textarea class="form-control" name="Composition" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Изображение</label>
-                        <input type="file" class="form-control" name="ImageFile" accept="image/*">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
 
 @functions {
     string GetOrderStatus(string status)
@@ -784,70 +765,4 @@
     }
 }
 
-<script>
- 
 
-    // Инициализация модальных окон для редактирования (предположительно)
-    $('.edit-user-btn').on('click', function () {
-        let userId = $(this).attr('data-userid');
-        $.ajax({
-            url: '/Admin/GetUser?id=' + userId,
-            success: function (response) {
-                $('#editUserId').val(response.UserId);
-                $('#editUsername').val(response.Username);
-                $('#editEmail').val(response.Email);
-                // Дополнительные поля...
-            },
-            error: function () {
-                alert('Ошибка загрузки данных.');
-            }
-        });
-    });
-
-
-    $(document).ready(function () {
-        $('body').on('click', '.delete-user-btn', function () {
-            let userId = $(this).attr('data-userid');
-            $('#deleteUserId').val(userId);
-        });
-    });
-</script>
-    @* function showEditModal(userId, username, email) {
-        document.getElementById('editUserId').value = userId;
-        document.getElementById('editUsername').value = username;
-        document.getElementById('editEmail').value = email;
-        $('#editUserModal').modal('show');
-    }
-
-
-    $(document).ready(function () {
-        $('body').on('click', '.btn-danger.btn-small[data-bs-target="#deleteUserModal"]', function () {
-            let userId = $(this).attr('data-userid'); // Берём UserID из атрибута кнопки
-            $('#deleteUserId').val(userId);           // Устанавливаем его в hidden поле формы
-        });
-    });
-
-
-    // Инициализация модальных окон
-    document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const modalId = this.getAttribute('data-bs-target');
-            const id = this.getAttribute('data-id');
-
-            if (id) {
-                // Загрузка данных для редактирования
-                fetch(`/Admin/Get${modalId.replace('#', '').replace('Modal', '')}?id=${id}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Заполнение формы данными
-                        const modal = document.querySelector(modalId);
-                        Object.keys(data).forEach(key => {
-                            const input = modal.querySelector(`[name="${key}"]`);
-                            if (input) {
-                                input.value = data[key];
-                            }
-                        });
-                    });
-            }
-        });
-    }); *@
