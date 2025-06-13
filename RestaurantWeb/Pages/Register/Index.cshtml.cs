@@ -27,63 +27,59 @@ namespace RestaurantWeb.Pages.Register
         {
             [Required]
             [StringLength(50, MinimumLength = 3)]
-            [Display(Name = "Имя пользователя")]
+            [Display(Name = "Username")]
             public string Username { get; set; }
 
             [Required]
             [EmailAddress]
-            [Display(Name = "Электронная почта")]
+            [Display(Name = "Email")]
             public string Email { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
-            [StringLength(100, MinimumLength = 6, ErrorMessage = "Пароль должен быть минимум 6 символов")]
-            [Display(Name = "Пароль")]
+            [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
+            [Display(Name = "Password")]
             public string Password { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
-            [Compare("Password", ErrorMessage = "Пароли не совпадают")]
-            [Display(Name = "Подтверждение пароля")]
+            [Compare("Password", ErrorMessage = "Passwords do not match")]
+            [Display(Name = "Confirm Password")]
             public string ConfirmPassword { get; set; }
 
             [Required]
-            [Display(Name = "Полное имя")]
+            [Display(Name = "Full Name")]
             public string FullName { get; set; }
 
             [Required]
             [Phone]
-            [Display(Name = "Телефон")]
+            [Display(Name = "Phone")]
             public string Phone { get; set; }
         }
 
         public string ErrorMessage { get; set; }
-
-        public void OnGet()
-        {
-        }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            // Проверяем уникальность username и email
             if (await _context.Users.AnyAsync(u => u.Username == Input.Username))
             {
-                ModelState.AddModelError("Input.Username", "Имя пользователя уже занято");
+                ModelState.AddModelError("Input.Username", "Username is already taken");
                 return Page();
             }
 
             if (await _context.Users.AnyAsync(u => u.Email == Input.Email))
             {
-                ModelState.AddModelError("Input.Email", "Электронная почта уже используется");
+                ModelState.AddModelError("Input.Email", "Email is already in use");
                 return Page();
             }
+
             var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Phone == Input.Phone);
             if (existingClient != null)
             {
-                ModelState.AddModelError("Input.Phone", "Клиент с таким номером телефона уже зарегистрирован.");
+                ModelState.AddModelError("Input.Phone", "A client with this phone number is already registered.");
                 return Page();
             }
 
