@@ -17,37 +17,37 @@
                 <form method="post" novalidate>
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
-                        <label asp-for="Input.Username" class="form-label"></label>
+                        <label asp-for="Input.Username" class="form-label" style="color: var(--peach); font-weight: 500;"></label>
                         <input asp-for="Input.Username" class="form-control rounded-pill" placeholder="Введите имя пользователя" />
                         <span asp-validation-for="Input.Username" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Input.Email" class="form-label"></label>
+                        <label asp-for="Input.Email" class="form-label" style="color: var(--peach); font-weight: 500;"></label>
                         <input asp-for="Input.Email" type="email" class="form-control rounded-pill" placeholder="Введите email" />
                         <span asp-validation-for="Input.Email" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Input.Password" class="form-labe"></label>
+                        <label asp-for="Input.Password" class="form-label" style="color: var(--peach); font-weight: 500;"></label>
                         <input asp-for="Input.Password" type="password" class="form-control rounded-pill" placeholder="Введите пароль" />
                         <span asp-validation-for="Input.Password" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                        <label asp-for="Input.ConfirmPassword" class="form-label" style="color: var(--peach); font-weight: 500;"></label>
                         <input asp-for="Input.ConfirmPassword" type="password" class="form-control rounded-pill" placeholder="Подтвердите пароль" />
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Input.FullName" class="form-label "></label>
+                        <label asp-for="Input.FullName" class="form-label" style="color: var(--peach); font-weight: 500;"></label>
                         <input asp-for="Input.FullName" class="form-control rounded-pill" placeholder="Введите полное имя" />
                         <span asp-validation-for="Input.FullName" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-4">
-                        <label asp-for="Input.Phone" class="form-label "></label>
+                        <label asp-for="Input.Phone" class="form-label" style="color: var(--peach); font-weight: 500;"></label>
                         <input asp-for="Input.Phone" class="form-control rounded-pill" placeholder="+7 (___) ___-__-__" />
                         <span asp-validation-for="Input.Phone" class="text-danger small"></span>
                     </div>
