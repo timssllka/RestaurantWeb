@@ -124,7 +124,15 @@
                         <p class="small">Уютное место с отличной кухней. Стали постоянными гостями.</p>
                     </div>
                 </div>
-                <a href="#" class="btn btn-light mt-2">Оставить отзыв</a>
+                 @if (User.Identity?.IsAuthenticated == true)
+                {
+
+                    @if (User.Claims.FirstOrDefault(x => x.Value == "4") != null)
+                    {
+                        <a href="#" class="btn btn-light mt-2">Оставить отзыв</a>
+                    }
+
+                }
             </div>
             
            
