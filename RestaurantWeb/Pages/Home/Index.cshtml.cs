@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using RestaurantWeb.Data;
+using System.Data.Common;
 using System.Security.Claims;
 
 namespace RestaurantWeb.Pages.Home
@@ -10,7 +12,7 @@ namespace RestaurantWeb.Pages.Home
         public string Roles { get; set; }
         public void OnGet()
         {
-            Roles = string.Join(", ", User.Claims.Where(c=>c.Type == ClaimTypes.Role).Select(c=>c.Value));
+            //Roles = string.Join(", ", User.Claims.Where(c=>c.Type == ClaimTypes.Role).Select(c=>c.Value));
         }
     }
 }

@@ -1,27 +1,62 @@
 ﻿@page
 @model RestaurantWeb.Views.Reservation.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 @{
     Layout = "_Layout"; // Указывает на макет
     ViewData["Title"] = "Бронирование";
 }
 
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h2>Забронировать столик</h2>
-        <form method="post">
-            <div class="mb-3">
-                <label for="name" class="form-label">Ваше имя</label>
-                <input type="text" class="form-control" id="name" required>
-            </div>
-            <div class="mb-3">
-                <label for="date" class="form-label">Дата</label>
-                <input type="date" class="form-control" id="date" required>
-            </div>
-            <div class="mb-3">
-                <label for="time" class="form-label">Время</label>
-                <input type="time" class="form-control" id="time" required>
-            </div>
-            <button type="submit" class="btn btn-success">Забронировать</button>
-        </form>
-    </div>
+
+
+<div class="container py-5">
+    <h1 class="mb-4">Бронирование столиков</h1>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <form method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label asp-for="ReservationTime" class="form-label">Дата и время</label>
+            <input name="ReservationTime" type="datetime-local" class="form-control" />
+            <span asp-validation-for="ReservationTime" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="GuestsNumber" class="form-label">Количество гостей</label>
+            <input name="GuestsNumber" type="number" min="1" max="20" class="form-control" />
+            <span asp-validation-for="GuestsNumber" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="TableId" class="form-label">Выберите стол</label>
+            <select name="TableId" class="form-select" required>
+                <option value="">-- Выберите стол --</option>
+                @foreach (var table in Model.AvailableTables)
+                {
+                    <option value="@table.TableId">Стол №@table.TableId (вместимость: @table.Capacity)</option>
+                }
+            </select>
+            <span asp-validation-for="TableId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="SpecialRequests" class="form-label">Особые пожелания (необязательно)</label>
+            <textarea name="SpecialRequests" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="SpecialRequests" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Забронировать</button>
+    </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" model="null"/>
+}

@@ -4,8 +4,6 @@
     Layout = "_Layout"; // Указывает на макет
     ViewData["Title"] = "Главная";
 }
-
-
 <div class="container-fluid">
     <div class="row">
         <!-- Левая боковая панель -->
@@ -21,6 +19,18 @@
                 <a href="/Menu" class="btn btn-sidebar mb-3">
                     <i class="bi bi-menu-button-wide me-2"></i>Меню
                 </a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+
+                        @if (User.Claims.FirstOrDefault(x => x.Value == "4") != null)
+                        {
+                            <a href="/Reservation" class="btn btn-sidebar mb-3">
+                                <i class="bi bi-menu-button-wide me-2"></i>Бронирование
+                            </a>
+                        }
+
+                    }
+              
                 <a href="/About" class="btn btn-sidebar mb-3">
                     <i class="bi bi-info-circle me-2"></i>О нас
                 </a>

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -20,58 +21,89 @@ namespace RestaurantWeb.Pages.Register
 
         }
         [BindProperty]
-        public RegisterViewModel Input { get; set; }
+        public RegisterInput Input { get; set; }
+
+        public class RegisterInput
+        {
+            [Required]
+            [StringLength(50, MinimumLength = 3)]
+            [Display(Name = "Имя пользователя")]
+            public string Username { get; set; }
+
+            [Required]
+            [EmailAddress]
+            [Display(Name = "Электронная почта")]
+            public string Email { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            [StringLength(100, MinimumLength = 6, ErrorMessage = "Пароль должен быть минимум 6 символов")]
+            [Display(Name = "Пароль")]
+            public string Password { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            [Compare("Password", ErrorMessage = "Пароли не совпадают")]
+            [Display(Name = "Подтверждение пароля")]
+            public string ConfirmPassword { get; set; }
+
+            [Required]
+            [Display(Name = "Полное имя")]
+            public string FullName { get; set; }
+
+            [Required]
+            [Phone]
+            [Display(Name = "Телефон")]
+            public string Phone { get; set; }
+        }
 
         public string ErrorMessage { get; set; }
 
-        public void OnGet() { }
-
+        public void OnGet()
+        {
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            // Проверка на уникальность username и email
+            // Проверяем уникальность username и email
             if (await _context.Users.AnyAsync(u => u.Username == Input.Username))
             {
-                ErrorMessage = "Пользователь с таким логином уже существует.";
+                ModelState.AddModelError("Input.Username", "Имя пользователя уже занято");
                 return Page();
             }
+
             if (await _context.Users.AnyAsync(u => u.Email == Input.Email))
             {
-                ErrorMessage = "Пользователь с таким email уже существует.";
+                ModelState.AddModelError("Input.Email", "Электронная почта уже используется");
                 return Page();
             }
-            string passwordHash = HashPassword(Input.Password);
+            var existingClient = await _context.Clients.FirstOrDefaultAsync(c => c.Phone == Input.Phone);
+            if (existingClient != null)
+            {
+                ModelState.AddModelError("Input.Phone", "Клиент с таким номером телефона уже зарегистрирован.");
+                return Page();
+            }
 
-            // Создание пользователя
+            // Хешируем пароль
+            var passwordHash = HashPassword(Input.Password);
+
+            // Создаем пользователя
             var user = new User
             {
                 Username = Input.Username,
                 Email = Input.Email,
                 PasswordHash = passwordHash,
-                IsActive = true
+                IsActive = true,
+                CreatedAt = DateTime.SpecifyKind(DateTime.UtcNow,DateTimeKind.Unspecified)
             };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // Получаем id роли "client"
-            var clientRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "client");
-            if (clientRole == null)
-            {
-                ErrorMessage = "Роль 'client' не найдена в базе.";
-                return Page();
-            }
-
-            // Назначаем роль пользователю
-            _context.UserRoles.Add(new UserRole
-            {
-                UserId = user.UserId,
-                RoleId = clientRole.RoleId
-            });
-
-            // Создаём запись в clients
+            // Создаем клиента, связанного с пользователем
             var client = new Client
             {
                 FullName = Input.FullName,
@@ -79,16 +111,28 @@ namespace RestaurantWeb.Pages.Register
                 Email = Input.Email,
                 UserId = user.UserId
             };
-            _context.Clients.Add(client);
 
+            _context.Clients.Add(client);
             await _context.SaveChangesAsync();
 
-            // После успешной регистрации можно перенаправить на страницу входа или приветствия
-            return RedirectToPage("/Login");
+            // Назначаем роль client
+            var clientRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "client");
+            if (clientRole != null)
+            {
+                _context.UserRoles.Add(new UserRole
+                {
+                    UserId = user.UserId,
+                    RoleId = clientRole.RoleId
+                });
+                await _context.SaveChangesAsync();
+            }
 
-           
-
+            // Можно сразу залогинить пользователя (если есть аутентификация)
+            // или перенаправить на страницу входа
+            return Redirect("/Login");
         }
+
+     
         private static string HashPassword(string password)
         {
             using var sha = SHA256.Create();
