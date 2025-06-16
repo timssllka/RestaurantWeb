@@ -91,7 +91,7 @@ namespace RestaurantWeb.Views.Reservation
             int? clientId = null;
             if (User.Identity.IsAuthenticated)
             {
-                var userId = int.Parse(User.FindFirst("user_id")?.Value ?? "0");
+                var userId = int.Parse(User.Claims.FirstOrDefault(x=>x.Type == "NameIdentifier")?.Value ?? "0");
                 var client = await _context.Clients.FirstOrDefaultAsync(c => c.UserId == userId);
                 if (client != null)
                     clientId = client.ClientId;

@@ -38,7 +38,8 @@ namespace RestaurantWeb.Pages.Login
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, userRole.RoleId.ToString())
+                new Claim(ClaimTypes.Role, userRole.RoleId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(

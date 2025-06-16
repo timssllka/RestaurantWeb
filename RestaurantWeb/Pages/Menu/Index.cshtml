@@ -1,37 +1,17 @@
 ﻿@page
 @model RestaurantWeb.Pages.Menu.IndexModel
-@{
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@{
     Layout = "_Layout";
     ViewData["Title"] = "Меню";
 }
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Левая боковая панель -->
+        <!-- Левая боковая панель (без изменений) -->
         <div class="col-md-3 col-lg-2 sidebar p-0">
-            <div class="d-flex flex-column p-4">
-                <div class="decoration-element mb-5">
-                    <i class="bi bi-egg-fried" style="font-size: 3rem; color: #5A4A42;"></i>
-                </div>
-                
-                <a href="/" class="btn btn-sidebar mb-3">
-                    <i class="bi bi-house-door me-2"></i>Главная
-                </a>
-                <a href="/Menu" class="btn btn-sidebar active mb-3">
-                    <i class="bi bi-menu-button-wide me-2"></i>Меню
-                </a>
-                <a href="/About" class="btn btn-sidebar mb-3">
-                    <i class="bi bi-info-circle me-2"></i>О нас
-                </a>
-            
-                
-                <div class="social-icons mt-auto">
-                    <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="social-icon"><i class="bi bi-telegram"></i></a>
-                </div>
-            </div>
+            <!-- ... -->
         </div>
 
         <!-- Основное содержимое -->
@@ -39,74 +19,101 @@
             <div class="text-center mb-5">
                 <h1 style="color: var(--peach);">Наше меню</h1>
                 <p class="lead">Попробуйте наши фирменные блюда</p>
+
+                @if (Model.CartMessage != null)
+                {
+                    <div class="alert alert-info">@Model.CartMessage</div>
+                }
             </div>
 
-            <!-- Фильтры -->
-            <div class="dish-filters mb-5">
+            <!-- Фильтры (теперь это форма) -->
+            <form method="get" class="dish-filters mb-5">
+                @Html.AntiForgeryToken()
+
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <select class="form-select" id="categoryFilter">
+                        <select class="form-select" name="categoryFilter">
                             <option value="">Все категории</option>
                             @foreach (var category in Model.Categories)
                             {
-                                <option value="@category.CategoryId">@category.Name</option>
+                                <option value="@category.CategoryId" selected="@(category.CategoryId.ToString() ==  Model.CurrentCategoryFilter)">@category.Name</option>
                             }
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <select class="form-select" id="seasonFilter">
+                        <select class="form-select" name="seasonFilter">
                             <option value="">Любой сезон</option>
-                            <option value="круглогодичное">Круглый год</option>
-                            <option value="летнее">Летнее</option>
-                            <option value="зимнее">Зимнее</option>
+                            <option value="year_round" selected="@("year_round" == Model.CurrentSeasonFilter)">Круглый год</option>
+                            <option value="summer" selected="@("summer" == Model.CurrentSeasonFilter)">Летнее</option>
+                            <option value="winter" selected="@("winter" == Model.CurrentSeasonFilter)">Зимнее</option>
                         </select>
                     </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">Применить фильтры</button>
+                        @if (!string.IsNullOrEmpty(Model.CurrentCategoryFilter) || !string.IsNullOrEmpty(Model.CurrentSeasonFilter))
+                        {
+                            <a href="/Menu" class="btn btn-outline-secondary ms-2">Сбросить</a>
+                        }
+                    </div>
                 </div>
-            </div>
+            </form>
 
             <!-- Меню по категориям -->
             @foreach (var category in Model.Categories)
             {
-                <div class="menu-category mb-5" data-category="@category.CategoryId">
+                <div class="menu-category mb-5">
                     <h2 class="category-title mb-4" style="color: var(--peach); border-bottom: 2px solid var(--peach); padding-bottom: 8px;">
                         @category.Name
                     </h2>
                     <p class="category-description mb-4">@category.Description</p>
-                    
+
                     <div class="row">
-                        @foreach (var dish in Model.Dishes.Where(d => d.CategoryId == category.CategoryId))
+                        @foreach (var dish in Model.FilteredDishes.Where(d => d.CategoryId == category.CategoryId))
                         {
-                            <div class="col-md-6 mb-4 dish-card" data-season="@dish.Seasonality?.ToLower()">
-                                <div class="dish-card-inner h-100">
-                                    <div class="dish-header d-flex justify-content-between align-items-start">
-                                        <h3 style="color: var(--peach);">@dish.Name</h3>
-                                        <span class="badge bg-sage">@dish.Price.ToString("N2") ₽</span>
-                                    </div>
-                                    
-                                    @if (!string.IsNullOrEmpty(dish.Seasonality))
-                                    {
-                                        <span class="season-badge @GetSeasonBadgeClass(dish.Seasonality)">
-                                            @GetSeasonName(dish.Seasonality)
-                                        </span>
-                                    }
-                                    
-                                    <p class="dish-composition mt-2">
-                                        <i class="bi bi-list-ul me-2" style="color: var(--peach);"></i>
-                                        @dish.Composition
-                                    </p>
-                                    
-                                    @if (dish.Calories.HasValue)
-                                    {
-                                        <p class="dish-calories">
-                                            <i class="bi bi-fire me-2" style="color: var(--peach);"></i>
-                                            @dish.Calories.Value ккал
+                            <div class="col-md-6 mb-4">
+                                <form method="post" asp-page-handler="AddToCart">
+                                    @Html.AntiForgeryToken()
+
+                                    <div class="dish-card-inner h-100 p-3" style="border: 1px solid #eee; border-radius: 8px;">
+                                        <input type="hidden" name="dishId" value="@dish.DishId" />
+
+                                        <div class="dish-header d-flex justify-content-between align-items-start">
+                                            <h3 style="color: var(--peach);">@dish.Name</h3>
+                                            <span class="badge bg-sage">@dish.Price.ToString("N2") ₽</span>
+                                        </div>
+
+                                        @if (!string.IsNullOrEmpty(dish.Seasonality))
+                                        {
+                                            <span class="season-badge @GetSeasonBadgeClass(dish.Seasonality)">
+                                                @GetSeasonName(dish.Seasonality)
+                                            </span>
+                                        }
+
+                                        <p class="dish-composition mt-2">
+                                            <i class="bi bi-list-ul me-2" style="color: var(--peach);"></i>
+                                            @dish.Composition
                                         </p>
-                                    }
-                                    
-                                    <button class="btn btn-add-to-cart mt-3">
-                                        <i class="bi bi-cart-plus me-2"></i>Добавить
-                                    </button>
-                                </div>
+
+                                        @if (dish.Calories.HasValue)
+                                        {
+                                            <p class="dish-calories">
+                                                <i class="bi bi-fire me-2" style="color: var(--peach);"></i>
+                                                @dish.Calories.Value ккал
+                                            </p>
+                                        }
+
+                                        <div class="d-flex align-items-center mt-3">
+                                            <div class="quantity-control me-3">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="this.nextElementSibling.stepDown()">-</button>
+                                                <input type="number" name="quantity" class="form-control" value="1" min="1" style="width: 50px; text-align: center;">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="this.previousElementSibling.stepUp()">+</button>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                                <i class="bi bi-cart-plus me-2"></i>Добавить
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         }
                     </div>
@@ -120,45 +127,111 @@
                 <h3 class="mb-4" style="color: var(--peach);">
                     <i class="bi bi-cart3 me-2"></i>Ваш заказ
                 </h3>
-                
+
                 <div class="cart-items mb-3">
-                    <!-- Пример товара в корзине -->
-                    <div class="cart-item mb-3">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6>Борщ</h6>
-                                <small class="text-muted">1 x 350 ₽</small>
-                            </div>
-                            <div>
-                                <button class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
+                    @if (Model.CartItems.Any())
+                    {
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <form method="post" asp-page-handler="UpdateCartItem" class="cart-item mb-3 p-2 border-bottom">
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden" name="dishId" value="@item.DishId" />
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6>@item.DishName</h6>
+                                        <div class="d-flex align-items-center mt-1">
+                                            <button type="submit" name="action" value="decrease" class="btn btn-sm btn-outline-secondary">-</button>
+                                            <input type="number" name="quantity" value="@item.Quantity" min="1"
+                                                   class="form-control" style="width: 50px; text-align: center;">
+                                            <button type="submit" name="action" value="increase" class="btn btn-sm btn-outline-secondary">+</button>
+                                            <span class="ms-2">x @item.Price.ToString("N2") ₽</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-3">@((item.Price * item.Quantity).ToString("N2")) ₽</span>
+                                        <button type="submit" name="action" value="remove" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-cart-message text-muted">
+                            Ваша корзина пуста
                         </div>
-                    </div>
-                    <!-- Товары будут добавляться через JS -->
+                    }
                 </div>
-                
+
                 <div class="cart-total mb-4">
-                    <h5>Итого: <span id="cartTotal">0</span> ₽</h5>
+                    <h5>Итого: @Model.CartTotal.ToString("N2") ₽</h5>
                 </div>
-                
-                <button class="btn btn-order w-100">
-                    Оформить заказ <i class="bi bi-arrow-right ms-2"></i>
-                </button>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#orderModal">
+                        Оформить заказ <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <a href="/Login" class="alert-link">Войдите</a>, чтобы оформить заказ
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
+
+<!-- Модальное окно оформления заказа -->
+<div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="CreateOrder">
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Оформление заказа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="tableNumber" class="form-label">Номер стола</label>
+                        <select class="form-select" id="tableNumber" name="tableId" required>
+                            <option value="">Выберите стол</option>
+                            @foreach (var table in Model.AvailableTables)
+                            {
+                                <option value="@table.TableId">Стол #@table.TableId (@table.Type, @table.Capacity мест)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="orderNotes" class="form-label">Особые пожелания</label>
+                        <textarea class="form-control" id="orderNotes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Подтвердить заказ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 @functions {
     string GetSeasonName(string seasonality)
     {
         return seasonality switch
         {
-            "круглогодичное" => "Круглый год",
-            "летнее" => "Летнее",
-            "зимнее" => "Зимнее",
+            "year_round" => "Круглый год",
+            "summer" => "Летнее",
+            "winter" => "Зимнее",
             _ => seasonality
         };
     }
@@ -167,47 +240,10 @@
     {
         return seasonality switch
         {
-            "круглогодичное" => "bg-sky",
-            "летнее" => "bg-sage",
-            "зимнее" => "bg-lavender",
+            "year_round" => "bg-sky",
+            "summer" => "bg-sage",
+            "winter" => "bg-lavender",
             _ => "bg-peach"
         };
     }
 }
-
-<script>
-    // Фильтрация блюд
-    document.getElementById('categoryFilter').addEventListener('change', function() {
-        const categoryId = this.value;
-        document.querySelectorAll('.menu-category').forEach(category => {
-            if (!categoryId || category.dataset.category === categoryId) {
-                category.style.display = 'block';
-            } else {
-                category.style.display = 'none';
-            }
-        });
-    });
-
-    document.getElementById('seasonFilter').addEventListener('change', function() {
-        const season = this.value;
-        document.querySelectorAll('.dish-card').forEach(card => {
-            if (!season || card.dataset.season === season) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    });
-
-    // Логика корзины
-    document.querySelectorAll('.btn-add-to-cart').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const dishCard = this.closest('.dish-card-inner');
-            const dishName = dishCard.querySelector('h3').textContent;
-            const dishPrice = dishCard.querySelector('.badge').textContent;
-
-            // Здесь должна быть логика добавления в корзину
-            alert(`Добавлено в корзину: ${dishName} - ${dishPrice}`);
-        });
-    });
-</script>

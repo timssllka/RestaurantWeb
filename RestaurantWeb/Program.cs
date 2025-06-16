@@ -38,6 +38,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddDbContext<DiplomdbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Настройка логгирования
 builder.Logging.ClearProviders();
@@ -47,6 +53,8 @@ builder.Logging.AddDebug();   // Логи в Debug-окно (Visual Studio)
 var app = builder.Build();
 
 // Middleware
+app.UseSession();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
